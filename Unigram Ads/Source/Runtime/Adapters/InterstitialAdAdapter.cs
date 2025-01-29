@@ -100,8 +100,6 @@ namespace UnigramAds.Core.Adapters
                 {
                     adShown?.Invoke();
 
-                    OnShowFinished?.Invoke();
-
                     UnigramAdsLogger.Log("Interstitial ad successfully shown");
                 },
                 (errorMessage) =>
@@ -120,8 +118,6 @@ namespace UnigramAds.Core.Adapters
                 AdsGramBridge.ShowAd(() =>
                 {
                     adShown?.Invoke();
-
-                    OnShowFinished?.Invoke();
                 },
                 (errorMessage) =>
                 {

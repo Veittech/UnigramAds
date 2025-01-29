@@ -31,19 +31,29 @@ const adSonarBridge = {
             {
                 console.warn('Ad Sonar sdk is not initialized');
 
+                const errorPtr = allocate(intArrayFromString(
+                    "NOT_INITIALIZED"), 'i8', ALLOC_NORMAL);
+
+                dynCall('vi', errorCallback, [errorPtr]);
+
+                _free(errorPtr);
+
                 return;
             }
 
             const adPlacement = UTF8ToString(adUnit);
 
-            this.AdsSonarController.show({ adUnit: adPlacement }).then((result) =>
+            this.AdsSonarController.show({ adUnit: adPlacement })
+            .then((result) =>
             {
+                console.log(`Ad sonar ad status: ${result.status}`);
+
                 if (result.status === 'error')
                 {
                     console.error(`Failed to show ad`);
                         
                     const errorPtr = allocate(intArrayFromString(
-                            result.message), 'i8', ALLOC_NORMAL);
+                        result.message), 'i8', ALLOC_NORMAL);
 
                     dynCall('vi', errorCallback, [errorPtr]);
 
@@ -58,8 +68,7 @@ const adSonarBridge = {
             })
             .catch((error) =>
             {
-                const errorPtr = allocate(
-                        intArrayFromString(error), 'i8', ALLOC_NORMAL);
+                const errorPtr = allocate(intArrayFromString(error), 'i8', ALLOC_NORMAL);
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
@@ -67,7 +76,8 @@ const adSonarBridge = {
             });
         },
 
-        removeAd: function(adUnit, successCallback, errorCallback)
+        removeAd: function(adUnit,
+            successCallback, errorCallback)
         {
             if (!this.isAvailableAdsSonar())
             {

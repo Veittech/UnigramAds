@@ -37,43 +37,47 @@ namespace UnigramAds.Core.Bridge
                 return;
             }
 
-            Debug.LogError("Failed to initialize Ad Sonar sdk");
-
             OnInitialized?.Invoke(isSuccess);
+
+            Debug.LogError("Failed to initialize Ad Sonar sdk");
         }
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void OnAdShow()
         {
+            OnAdShown?.Invoke();
+
             Debug.Log("Ad sonar ad successfully shown");
 
-            OnAdShown?.Invoke();
+            OnAdShown = null;
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void OnAdShowFail(string errorMessage)
         {
-            Debug.LogWarning($"Failed to shown Ad Sonar ad, " +
-                $"reason: {errorMessage}");
-
             OnAdShowFailed?.Invoke(errorMessage);
+
+            Debug.LogWarning($"Failed to shown Ad Sonar " +
+                $"ad, reason: {errorMessage}");
+
+            OnAdShowFailed = null;
         }
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void OnAdUnitRemove()
         {
-            Debug.Log("Ad sonar ad unit removed");
-
             OnAdUnitRemoved?.Invoke();
+
+            Debug.Log("Ad sonar ad unit removed");
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void OnAdUnitRemoveFail(string errorMessage)
         {
-            Debug.LogWarning($"Failed to remove ad sonar ad unit, " +
-                $"reason: {errorMessage}");
-
             OnAdUnitRemoveFailed?.Invoke(errorMessage);
+
+            Debug.LogWarning($"Failed to remove ad sonar " +
+                $"ad unit, reason: {errorMessage}");
         }
 #endregion
 

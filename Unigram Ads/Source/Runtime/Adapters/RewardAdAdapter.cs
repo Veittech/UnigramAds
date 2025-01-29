@@ -105,11 +105,9 @@ namespace UnigramAds.Core.Adapters
             {
                 AdSonarBridge.ShowAdByUnitId(rewardAdUnit, () =>
                 {
-                    adShown?.Invoke();
-
-                    OnShowFinished?.Invoke();
-
                     UnigramAdsLogger.Log("Rewarded ad successfully shown");
+
+                    adShown?.Invoke();
                 },
                 (errorMessage) =>
                 {
