@@ -85,11 +85,11 @@ namespace UnigramAds.Core.Bridge
         private static event Action OnAdUnitRemoved;
         private static event Action<string> OnAdUnitRemoveFailed;
 
-        internal static void Init(string appId, bool isTesting, Action<bool> sdkInitialized)
+        internal static void Init(Action<bool> sdkInitialized)
         {
             OnInitialized = sdkInitialized;
 
-            InitAdSonar(appId, isTesting, OnInitialize);
+            InitAdSonar("", false, OnInitialize);
         }
 
         internal static void ShowAdByUnitId(string adUnit,

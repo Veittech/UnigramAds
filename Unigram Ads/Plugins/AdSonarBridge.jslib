@@ -9,36 +9,15 @@ const adSonarBridge = {
 
         initAdSonar: function(appId, isTesting, callback)
         {
-            const parsedAppId = UTF8ToString(appId);
-
-            let newAdSonarScript = `https://static.sonartech.io/lib/1.0.0/sonar.js?appId=${parsedAppId}`;
-
-            if (isTesting)
-            {
-                newAdSonarScript += "&isDebug=true";
-
-                console.log('Activated debug mode for AdSonar bridge');
-            }
-            
-            let newLibInstance = document.createElement("script");
-
-            newLibInstance.id = "ad-sonar-lib";
-            newLibInstance.scr = newAdSonarScript;
-            newLibInstance.async = true;
-
-            document.head.appendChild(newLibInstance);
-
-            this.AdsSonarController = newLibInstance;
-
-            console.log(`Created ad sonar instance: ${this.AdsSonarController}, url: ${newAdSonarScript}`);
+            this.AdsSonarController = window.Sonar;
 
             if (!this.isAvailableAdsSonar())
             {
                 console.warn(`Failed to initialize Ad Sonar bridge`);
 
-              //  dynCall('vi', callback, [0]);
+                dynCall('vi', callback, [0]);
 
-               // return;
+                return;
             }
 
             console.log(`Ads Sonar bridge initialized`);

@@ -185,8 +185,7 @@ namespace UnigramAds.Core
 
                 if (isActiveAdSonar)
                 {
-                    AdSonarBridge.Init(this.AppId, 
-                        this.IsTestMode, (isSuccess) =>
+                    AdSonarBridge.Init((isSuccess) =>
                     {
                         initializationFinished?.Invoke(isSuccess,
                             AdNetworkTypes.AdSonar);
