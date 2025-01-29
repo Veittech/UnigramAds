@@ -157,12 +157,13 @@ namespace UnigramAds.Core
                     network => network == adNetwork);
 
                 UnigramAdsLogger.Log($"Available networks: {JsonUtility.ToJson(ActiveAdNetworks)}");
+                UnigramAdsLogger.Log($"Founded network: {foundedNetwork}, current: {adNetwork}");
 
                 if (foundedNetwork == adNetwork)
                 {
                     Debug.LogWarning($"Ad network {adNetwork} already exist");
 
-                    return this;
+                    //return this;
                 }
 
                 this.ActiveAdNetworks.Add(adNetwork);
@@ -178,8 +179,8 @@ namespace UnigramAds.Core
                     return null;
                 }
 
-                var isActiveAdSonar = ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
-                var isActiveAdsGram = ActiveAdNetworks.Contains(AdNetworkTypes.AdsGram);
+                var isActiveAdSonar = this.ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
+                var isActiveAdsGram = this.ActiveAdNetworks.Contains(AdNetworkTypes.AdsGram);
 
                 Debug.Log($"AdSonar status: {isActiveAdSonar}, " +
                     $"AdsGram status: {isActiveAdsGram}");
