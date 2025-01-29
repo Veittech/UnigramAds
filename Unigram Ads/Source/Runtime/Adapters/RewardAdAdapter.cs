@@ -25,7 +25,10 @@ namespace UnigramAds.Core.Adapters
 
         public void Show()
         {
-            ShowAdWithCallback(() => { OnShowFinished?.Invoke(); });
+            ShowAdWithCallback(() =>
+            {
+                OnShowFinished?.Invoke();
+            });
         }
 
         public void Show(Action adFinished)
@@ -98,9 +101,6 @@ namespace UnigramAds.Core.Adapters
 
             var rewardAdUnit = _unigramSDK.RewardedAdUnit;
 
-            UnigramAdsLogger.Log($"AdSonar status: {_unigramSDK.IsAvailableAdSonar}, " +
-                $"AdsGram status: {_unigramSDK.IsAvailableAdsGram}");
-
             if (_unigramSDK.IsAvailableAdSonar)
             {
                 AdSonarBridge.ShowAdByUnitId(rewardAdUnit, () =>
@@ -124,9 +124,9 @@ namespace UnigramAds.Core.Adapters
             {
                 AdsGramBridge.ShowAd(() =>
                 {
-                    adShown?.Invoke();
+                    UnigramAdsLogger.Log("Reward ad successfully shown");
 
-                    OnShowFinished?.Invoke();
+                    adShown?.Invoke();
                 },
                 (errorMessage) =>
                 {

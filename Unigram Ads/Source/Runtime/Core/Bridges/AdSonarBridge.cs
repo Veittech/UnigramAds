@@ -93,7 +93,7 @@ namespace UnigramAds.Core.Bridge
         {
             OnInitialized = sdkInitialized;
 
-            InitAdSonar("", false, OnInitialize);
+            InitAdSonar(string.Empty, false, OnInitialize);
         }
 
         internal static void ShowAdByUnitId(string adUnit,

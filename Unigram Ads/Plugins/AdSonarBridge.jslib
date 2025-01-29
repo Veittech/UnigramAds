@@ -50,7 +50,8 @@ const adSonarBridge = {
 
                 if (result.status === 'error')
                 {
-                    console.error(`Failed to show ad`);
+                    console.error(`Failed to show ad, claimed status: `+
+                        `${result.status}, reason: ${result.message}`);
                         
                     const errorPtr = allocate(intArrayFromString(
                         result.message), 'i8', ALLOC_NORMAL);
@@ -65,10 +66,14 @@ const adSonarBridge = {
                 console.log(`Ad successfully shown, status: ${result.status}`);
 
                 dynCall('v', successCallback);
+
+                return;
             })
             .catch((error) =>
             {
-                const errorPtr = allocate(intArrayFromString(error), 'i8', ALLOC_NORMAL);
+                console.error(`Failed to show ad, reason: ${error.message}`);
+
+                const errorPtr = allocate(intArrayFromString(error.message), 'i8', ALLOC_NORMAL);
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
@@ -88,14 +93,15 @@ const adSonarBridge = {
 
             const adPlacement = UTF8ToString(adUnit);
 
-            this.AdsSonarController.remove({ adUnit: adUnit }).then((result) =>
+            this.AdsSonarController.remove({ adUnit: adUnit })
+            .then((result) =>
             {   
                 if (result.status === 'error')
                 {
-                    console.error(`Failed to remove ad unit`);
+                    console.error(`Failed to remove ad unit, reasoN: ${result.message}`);
                         
                     const errorPtr = allocate(intArrayFromString(
-                            result.message), 'i8', ALLOC_NORMAL);
+                        result.message), 'i8', ALLOC_NORMAL);
 
                     dynCall('vi', errorCallback, [errorPtr]);
 
@@ -110,8 +116,8 @@ const adSonarBridge = {
             })  
             .catch((error) =>
             {
-                const errorPtr = allocate(
-                        intArrayFromString(error), 'i8', ALLOC_NORMAL);
+                const errorPtr = allocate(intArrayFromString(
+                    error.message), 'i8', ALLOC_NORMAL);
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
