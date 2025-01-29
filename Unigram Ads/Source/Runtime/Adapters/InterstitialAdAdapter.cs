@@ -75,7 +75,7 @@ namespace UnigramAds.Core.Adapters
             (errorMessage) =>
             {
                 UnigramAdsLogger.LogWarning($"Failed to remove interstitial ad "+
-                    "unit {rewardAdUnit} from AdsSonar");
+                    $"unit {rewardAdUnit} from AdsSonar");
             });
         }
 
@@ -87,9 +87,6 @@ namespace UnigramAds.Core.Adapters
             }
 
             var interstitialAdUnit = _unigramSDK.InterstitialAdUnit;
-
-            UnigramAdsLogger.Log($"Interstitial ad unit: {interstitialAdUnit}, " +
-                $"app id: {_unigramSDK.AppId}");
 
             if (!IsAvailableAdUnit())
             {

@@ -81,7 +81,8 @@ namespace UnigramAds.Core.Adapters
             },
             (errorMessage) =>
             {
-                UnigramAdsLogger.LogWarning($"Failed to remove rewardedad unit {rewardAdUnit} from AdsSonar");
+                UnigramAdsLogger.LogWarning($"Failed to remove rewardedad "+
+                    "unit {rewardAdUnit} from AdsSonar");
             });
         }
 
@@ -93,9 +94,6 @@ namespace UnigramAds.Core.Adapters
             }
 
             var rewardAdUnit = _unigramSDK.RewardedAdUnit;
-
-            UnigramAdsLogger.Log($"Rewarded ad unit: {rewardAdUnit}, " +
-                $"app id: {_unigramSDK.AppId}");
 
             if (!IsAvailableAdUnit())
             {

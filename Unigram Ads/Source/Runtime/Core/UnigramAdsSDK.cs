@@ -112,13 +112,13 @@ namespace UnigramAds.Core
             /// <summary>
             /// Init AdsGram Bridge
             /// </summary>
-            /// <param name="appId"></param>
-            public Builder(string appId)
+            /// <param name="blockId"></param>
+            public Builder(string blockId)
             {
-                this.AppId = appId;
+                this.AppId = blockId;
 
-                this.InterstitialAdUnit = appId;
-                this.RewardedAdUnit = appId;
+                this.InterstitialAdUnit = blockId;
+                this.RewardedAdUnit = blockId;
 
                 this.ActiveAdNetworks = new();
             }
@@ -207,9 +207,6 @@ namespace UnigramAds.Core
                         }
                     });
                 }
-
-                Debug.Log($"Available app id: {this.AppId}, inter unit: " +
-                    $"{this.InterstitialAdUnit}, reward unit: {this.RewardedAdUnit}");
 
                 return _instance;
             }
