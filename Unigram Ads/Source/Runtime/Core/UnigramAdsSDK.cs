@@ -37,18 +37,22 @@ namespace UnigramAds.Core
 
         public AdTypes DebugAdType { get; private set; }
 
-        public bool IsAvailableAdSonar => ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
-        public bool IsAvailableAdsGram => ActiveAdNetworks.Contains(AdNetworkTypes.AdsGram);
+        public bool IsAvailableAdSonar => this.ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
+        public bool IsAvailableAdsGram => this.ActiveAdNetworks.Contains(AdNetworkTypes.AdsGram);
 
         private UnigramAdsSDK(Builder builder)
         {
             this.IsInitialized = builder.IsInitialized;
             this.IsTestMode = builder.IsTestMode;
 
+            this.DebugAdType = builder.DebugAdType;
+
             this.AppId = builder.AppId;
 
             this.InterstitialAdUnit = builder.InterstitialAdUnit;
             this.RewardedAdUnit = builder.RewardedAdUnit;
+
+            this.ActiveAdNetworks = builder.ActiveAdNetworks;
         }
 
         public sealed class Builder
