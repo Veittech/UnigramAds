@@ -18,6 +18,8 @@ namespace UnigramAds.Demo
         private IVideoAd _interstitialAd;
         private IRewardVideoAd _rewardAd;
 
+        private int _coinBalance;
+
         private readonly string AD_SONAR_APP_ID = "app_aaa2d5da";
 
         private readonly int REWARD_AMOUNT = 15;
@@ -33,11 +35,11 @@ namespace UnigramAds.Demo
         {
             if (PlayerPrefs.HasKey(FAKE_BALANCE_SAVE_KEY))
             {
-                var loadedBalance = PlayerPrefs.GetInt(FAKE_BALANCE_SAVE_KEY);
+                _coinBalance = PlayerPrefs.GetInt(FAKE_BALANCE_SAVE_KEY);
 
-                Debug.Log($"Loaded balance: {loadedBalance}");
+                Debug.Log($"Loaded balance: {_coinBalance}");
 
-                SetBalance(loadedBalance);
+                SetBalance(_coinBalance);
             }
 
             _watchInterstitialAd.onClick.AddListener(WatchAd);
@@ -93,16 +95,14 @@ namespace UnigramAds.Demo
         {
             Debug.Log("Ad watched, start fetching reward");
 
-            var currentBalance = int.Parse(_fakeBalanceBar.text);
+            Debug.Log($"Current balance: {_coinBalance}");
 
-            Debug.Log($"Current balance: {currentBalance}");
+            _coinBalance += REWARD_AMOUNT;
 
-            currentBalance += REWARD_AMOUNT;
+            Debug.Log($"Updated balance: {_coinBalance}");
 
-            Debug.Log($"Updated balance: {currentBalance}");
-
-            SetBalance(currentBalance);
-            SaveBalance(currentBalance);
+            SetBalance(_coinBalance);
+            SaveBalance(_coinBalance);
         }
 
         private void OnInitialized(bool isSuccess,

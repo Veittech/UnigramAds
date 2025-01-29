@@ -61,10 +61,6 @@ const adSonarBridge = {
                 {
                     console.log('Rewarded ad closed');
                 },
-                onReward: () =>
-                {
-                    console.log('Rewarded ad finised and reward available');
-                },
             }).then((result) =>
             {
                 console.log(`Ad Sonar ad status: ${result.status}`);
