@@ -82,6 +82,8 @@ namespace UnigramAds.Core
 
                 this.InterstitialAdUnit = interAdUnit;
                 this.RewardedAdUnit = rewardAdUnit;
+
+                this.ActiveAdNetworks = new();
             }
 
             /// <summary>
@@ -94,6 +96,8 @@ namespace UnigramAds.Core
                 AdTypes adType, string targetAdUnit)
             {
                 this.AppId = appId;
+
+                this.ActiveAdNetworks = new();
 
                 if (adType == AdTypes.FullscreenStatic)
                 {
@@ -112,6 +116,8 @@ namespace UnigramAds.Core
             public Builder(string appId)
             {
                 this.AppId = appId;
+
+                this.ActiveAdNetworks = new();
             }
 
             public Builder WithTestMode()
@@ -146,7 +152,7 @@ namespace UnigramAds.Core
 
             public Builder WithAdNetwork(AdNetworkTypes adNetwork)
             {
-                var foundedNetwork = ActiveAdNetworks.FirstOrDefault(
+                var foundedNetwork = this.ActiveAdNetworks.FirstOrDefault(
                     network => network == adNetwork);
 
                 if (foundedNetwork == adNetwork)
@@ -156,7 +162,7 @@ namespace UnigramAds.Core
                     return this;
                 }
 
-                ActiveAdNetworks.Add(adNetwork);
+                this.ActiveAdNetworks.Add(adNetwork);
 
                 return this;
             }
