@@ -63,9 +63,7 @@ const adSonarBridge = {
                 },
                 onReward: () =>
                 {
-                    dynCall('v', successCallback);
-
-                    console.log('Rewarded ad successfully shown');
+                    console.log('Rewarded ad finised and reward available');
                 },
             }).then((result) =>
             {
@@ -85,6 +83,8 @@ const adSonarBridge = {
 
                     return;
                 }
+
+                dynCall('v', successCallback);
 
                 console.log(`Rewarded Ad successfully shown`);
             });
