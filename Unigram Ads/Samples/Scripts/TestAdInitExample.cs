@@ -9,8 +9,8 @@ namespace UnigramAds.Demo
 {
     public sealed class TestAdInitExample : MonoBehaviour
     {
-        [SerializeField, Space] private Button _watchAdButton;
-        [SerializeField] private Button _watchRewaardAdButton;
+        [SerializeField, Space] private Button _watchInterstitialAd;
+        [SerializeField] private Button _watchRewardAd;
         [SerializeField, Space] private Text _fakeBalanceBar;
 
         private UnigramAdsSDK _unigramAds;
@@ -20,16 +20,13 @@ namespace UnigramAds.Demo
 
         private readonly string AD_SONAR_APP_ID = "app_aaa2d5da";
 
-        private readonly string ADS_GRAM_INTER_ID = "";
-        private readonly string ADS_GRAM_REWARD_AD_ID = "";
-
         private readonly int REWARD_AMOUNT = 15;
         private readonly string FAKE_BALANCE_SAVE_KEY = UnigramUtils.FAKE_BALANCE_SAVE_KEY;
 
         private void OnDestroy()
         {
-            _watchAdButton.onClick.RemoveListener(WatchAd);
-            _watchRewaardAdButton.onClick.RemoveListener(WatchRewardAd);
+            _watchInterstitialAd.onClick.RemoveListener(WatchAd);
+            _watchRewardAd.onClick.RemoveListener(WatchRewardAd);
         }
 
         private void Start()
@@ -43,8 +40,8 @@ namespace UnigramAds.Demo
                 SetBalance(loadedBalance);
             }
 
-            _watchAdButton.onClick.AddListener(WatchAd);
-            _watchRewaardAdButton.onClick.AddListener(WatchRewardAd);
+            _watchInterstitialAd.onClick.AddListener(WatchAd);
+            _watchRewardAd.onClick.AddListener(WatchRewardAd);
 
             if (!UnigramUtils.IsSupporedPlatform())
             {
@@ -55,13 +52,7 @@ namespace UnigramAds.Demo
                 "interstitial_placement", "rewarded_placement")
                 .WithTestMode()
                 .WithAdNetwork(AdNetworkTypes.AdSonar)
-                .Build((isSuccess, network) =>
-                {
-                    Debug.Log($"Sdk initialized with status: {isSuccess}, network: {network}");
-                });
-
-            _interstitialAd = new InterstitialAdAdapter();
-            _rewardAd = new RewardAdAdapter();
+                .Build(OnInitialized);
         }
 
         private void WatchAd()
@@ -112,6 +103,16 @@ namespace UnigramAds.Demo
 
             SetBalance(currentBalance);
             SaveBalance(currentBalance);
+        }
+
+        private void OnInitialized(bool isSuccess,
+            AdNetworkTypes currentNetwork)
+        {
+            _interstitialAd = new InterstitialAdAdapter();
+            _rewardAd = new RewardAdAdapter();
+
+            Debug.Log($"Sdk initialized with status: " +
+                $"{isSuccess}, network: {currentNetwork}");
         }
     }
 }

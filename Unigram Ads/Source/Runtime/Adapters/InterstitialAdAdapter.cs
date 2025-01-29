@@ -40,6 +40,8 @@ namespace UnigramAds.Core.Adapters
             if (!UnigramUtils.IsSupporedPlatform() ||
                 !IsAvailableAdUnit())
             {
+                UnigramAdsLogger.LogWarning("Ad unit is not available");
+
                 return;
             }
 
@@ -58,6 +60,8 @@ namespace UnigramAds.Core.Adapters
             if (!UnigramUtils.IsSupporedPlatform() ||
                 !IsAvailableAdUnit())
             {
+                UnigramAdsLogger.LogWarning("Ad unit is not available");
+
                 return;
             }
 
@@ -83,14 +87,19 @@ namespace UnigramAds.Core.Adapters
 
             if (!IsAvailableAdUnit())
             {
+                UnigramAdsLogger.LogWarning("Ad unit is not available");
+
                 return;
             }
 
-            var rewardAdUnit = _unigramSDK.InterstitialAdUnit;
+            var interstitialAdUnit = _unigramSDK.InterstitialAdUnit;
+
+            UnigramAdsLogger.Log($"AdSonar status: {_unigramSDK.IsAvailableAdSonar}, " +
+                $"AdsGram status: {_unigramSDK.IsAvailableAdsGram}");
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
-                AdSonarBridge.ShowAdByUnitId(rewardAdUnit, () =>
+                AdSonarBridge.ShowAdByUnitId(interstitialAdUnit, () =>
                 {
                     adShown?.Invoke();
 
