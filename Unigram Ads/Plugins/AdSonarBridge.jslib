@@ -25,7 +25,8 @@ const adSonarBridge = {
             dynCall('vi', callback, [1]);
         },
 
-        showAd: function(adUnit, successCallback, errorCallback)
+        showRewardAd: function(adUnit,
+            successCallback, errorCallback)
         {
             if (!this.isAvailableAdsSonar())
             {
@@ -43,14 +44,36 @@ const adSonarBridge = {
 
             const adPlacement = UTF8ToString(adUnit);
 
-            this.AdsSonarController.show({ adUnit: adPlacement })
-            .then((result) =>
+            this.AdsSonarController.show({ adUnit: adPlacement, loader: true, 
+                onStart: () =>
+                {
+                    console.log('Rewarded ad started loading');
+                },
+                onShow: () =>
+                {
+                    console.log('Rewarded ad start showing');
+                },
+                onError: () =>
+                {
+                    console.warn('Rewarded ad show failed');
+                },
+                onClose: () =>
+                {
+                    console.log('Rewarded ad closed');
+                },
+                onReward: () =>
+                {
+                    dynCall('v', successCallback);
+
+                    console.log('Rewarded ad successfully shown');
+                },
+            }).then((result) =>
             {
-                console.log(`Ad sonar ad status: ${result.status}`);
+                console.log(`Ad Sonar ad status: ${result.status}`);
 
                 if (result.status === 'error')
                 {
-                    console.error(`Failed to show ad, claimed status: `+
+                    console.error(`Failed to show rewarded ad, claimed status: `+
                         `${result.status}, reason: ${result.message}`);
                         
                     const errorPtr = allocate(intArrayFromString(
@@ -63,21 +86,70 @@ const adSonarBridge = {
                     return;
                 }
 
-                console.log(`Ad successfully shown, status: ${result.status}`);
+                console.log(`Rewarded Ad successfully shown`);
+            });
+        },
 
-                dynCall('v', successCallback);
-
-                return;
-            })
-            .catch((error) =>
+        showInterstitialAd: function(adUnit,
+            successCallback, errorCallback)
+        {
+            if (!this.isAvailableAdsSonar())
             {
-                console.error(`Failed to show ad, reason: ${error.message}`);
+                console.warn('Ad Sonar sdk is not initialized');
 
-                const errorPtr = allocate(intArrayFromString(error.message), 'i8', ALLOC_NORMAL);
+                const errorPtr = allocate(intArrayFromString(
+                    "NOT_INITIALIZED"), 'i8', ALLOC_NORMAL);
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
                 _free(errorPtr);
+
+                return;
+            }
+
+            const adPlacement = UTF8ToString(adUnit);
+
+            this.AdsSonarController.show({ adUnit: adPlacement, loader: true, 
+                onStart: () =>
+                {
+                    console.log('Interstitial ad started loading');
+                },
+                onShow: () =>
+                {
+                    console.log('Interstitial ad start showing');
+                },
+                onError: () =>
+                {
+                    console.warn('Interstitial ad show failed');
+                },
+                onClose: () =>
+                {
+                    console.log('Interstitial ad closed');
+                },
+            }).then((result) =>
+            {
+                console.log(`Ad sonar ad status: ${result.status}`);
+
+                if (result.status === 'error')
+                {
+                    console.error(`Failed to show interstitial ad, claimed status: `+
+                        `${result.status}, reason: ${result.message}`);
+                        
+                    const errorPtr = allocate(intArrayFromString(
+                        result.message), 'i8', ALLOC_NORMAL);
+
+                    dynCall('vi', errorCallback, [errorPtr]);
+
+                    _free(errorPtr);
+
+                    return;
+                }
+
+                console.log(`Interstitial Ad successfully shown`);
+
+                dynCall('v', successCallback);
+
+                return;
             });
         },
 
@@ -93,8 +165,7 @@ const adSonarBridge = {
 
             const adPlacement = UTF8ToString(adUnit);
 
-            this.AdsSonarController.remove({ adUnit: adUnit })
-            .then((result) =>
+            this.AdsSonarController.remove({ adUnit: adUnit }).then((result) =>
             {   
                 if (result.status === 'error')
                 {
@@ -113,15 +184,6 @@ const adSonarBridge = {
                 console.log(`Ad unit successfully removed, status: ${result.status}`);
 
                 dynCall('v', successCallback);
-            })  
-            .catch((error) =>
-            {
-                const errorPtr = allocate(intArrayFromString(
-                    error.message), 'i8', ALLOC_NORMAL);
-
-                dynCall('vi', errorCallback, [errorPtr]);
-
-                _free(errorPtr);
             });
         }
     },
@@ -131,9 +193,14 @@ const adSonarBridge = {
         adSonar.initAdSonar(appId, isTesting, callback);
     },
 
-    ShowAd: function(adUnit, adShown, adShowFailed)
+    ShowRewardAd: function(adUnit, adShown, adShowFailed)
     {
-        adSonar.showAd(adUnit, adShown, adShowFailed);
+        adSonar.showRewardAd(adUnit, adShown, adShowFailed);
+    },
+
+    ShowInterstitialAd: function(adUnit, adShown, adShowFailed)
+    {
+        adSonar.showInterstitialAd(adUnit, adShown, adShowFailed);
     },
 
     RemoveAd: function(adUnit, adRemoved, adRemoveFailed)

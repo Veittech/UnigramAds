@@ -96,7 +96,7 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
-                AdSonarBridge.ShowAdByUnitId(interstitialAdUnit, () =>
+                AdSonarBridge.ShowInterstitialAdByUnit(interstitialAdUnit, () =>
                 {
                     adShown?.Invoke();
 

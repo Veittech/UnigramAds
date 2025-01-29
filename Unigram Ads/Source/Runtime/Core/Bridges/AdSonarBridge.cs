@@ -14,7 +14,11 @@ namespace UnigramAds.Core.Bridge
             bool isTesting, Action<int> sdkinitialized);
 
         [DllImport("__Internal")]
-        private static extern void ShowAd(string adUnit,
+        private static extern void ShowInterstitialAd(string adUnit,
+            Action adShown, Action<string> showAdFailed);
+
+        [DllImport("__Internal")]
+        private static extern void ShowRewardAd(string adUnit,
             Action adShown, Action<string> showAdFailed);
 
         [DllImport("__Internal")]
@@ -96,13 +100,22 @@ namespace UnigramAds.Core.Bridge
             InitAdSonar(string.Empty, false, OnInitialize);
         }
 
-        internal static void ShowAdByUnitId(string adUnit,
+        internal static void ShowRewardedAdByUnit(string adUnit,
             Action adShown, Action<string> adShowFailed)
         {
             OnAdShown = adShown;
             OnAdShowFailed = adShowFailed;
 
-            ShowAd(adUnit, OnAdShow, OnAdShowFail);
+            ShowRewardAd(adUnit, OnAdShow, OnAdShowFail);
+        }
+
+        internal static void ShowInterstitialAdByUnit(string adUnit,
+            Action adShown, Action<string> adShowFailed)
+        {
+            OnAdShown = adShown;
+            OnAdShowFailed = adShowFailed;
+
+            ShowInterstitialAd(adUnit, OnAdShow, OnAdShowFail);
         }
 
         internal static void RemoveAdUnit(string adUnit,

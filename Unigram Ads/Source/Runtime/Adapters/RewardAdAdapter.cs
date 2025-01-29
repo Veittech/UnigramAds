@@ -103,7 +103,7 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
-                AdSonarBridge.ShowAdByUnitId(rewardAdUnit, () =>
+                AdSonarBridge.ShowRewardedAdByUnit(rewardAdUnit, () =>
                 {
                     UnigramAdsLogger.Log("Rewarded ad successfully shown");
 
