@@ -40,7 +40,7 @@ namespace UnigramAds.Core.Adapters
         {
             if (!_unigramSDK.IsAvailableAdsGram)
             {
-                UnigramAdsLogger.LogWarning("AdSonar ad units is not available");
+                UnigramAdsLogger.LogWarning("AdsGram ad units is not available");
 
                 return;
             }
@@ -92,14 +92,17 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
+            var rewardAdUnit = _unigramSDK.RewardedAdUnit;
+
+            UnigramAdsLogger.Log($"Rewarded ad unit: {rewardAdUnit}, " +
+                $"app id: {_unigramSDK.AppId}");
+
             if (!IsAvailableAdUnit())
             {
                 UnigramAdsLogger.LogWarning("Reward ad unit is not available");
 
                 return;
             }
-
-            var rewardAdUnit = _unigramSDK.RewardedAdUnit;
 
             if (_unigramSDK.IsAvailableAdSonar)
             {

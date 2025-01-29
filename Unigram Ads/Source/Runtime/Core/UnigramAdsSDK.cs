@@ -117,6 +117,9 @@ namespace UnigramAds.Core
             {
                 this.AppId = appId;
 
+                this.InterstitialAdUnit = appId;
+                this.RewardedAdUnit = appId;
+
                 this.ActiveAdNetworks = new();
             }
 
@@ -193,9 +196,6 @@ namespace UnigramAds.Core
                 {
                     AdsGramBridge.Init(this.AppId, (isSuccess) =>
                     {
-                        this.InterstitialAdUnit = this.AppId;
-                        this.RewardedAdUnit = this.AppId;
-
                         initializationFinished?.Invoke(isSuccess,
                             AdNetworkTypes.AdsGram);
 

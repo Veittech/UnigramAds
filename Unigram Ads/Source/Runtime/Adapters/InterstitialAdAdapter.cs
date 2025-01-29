@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using UnigramAds.Core.Bridge;
 using UnigramAds.Utils;
 
@@ -32,7 +33,7 @@ namespace UnigramAds.Core.Adapters
         {
             if (!_unigramSDK.IsAvailableAdsGram)
             {
-                UnigramAdsLogger.LogWarning("AdSonar ad units is not available");
+                UnigramAdsLogger.LogWarning("AdsGram ad units is not available");
 
                 return;
             }
@@ -85,14 +86,17 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
+            var interstitialAdUnit = _unigramSDK.InterstitialAdUnit;
+
+            UnigramAdsLogger.Log($"Interstitial ad unit: {interstitialAdUnit}, " +
+                $"app id: {_unigramSDK.AppId}");
+
             if (!IsAvailableAdUnit())
             {
                 UnigramAdsLogger.LogWarning("Ad unit is not available");
 
                 return;
             }
-
-            var interstitialAdUnit = _unigramSDK.InterstitialAdUnit;
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
