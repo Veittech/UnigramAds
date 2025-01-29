@@ -39,7 +39,7 @@ const adsGramBridge = {
             }
         },
 
-        showRewardAd: function(successCallback, errorCallback)
+        showNativeAd: function(successCallback, errorCallback)
         {
             if (!this.isAvailableAdsGram())
             {
@@ -86,7 +86,7 @@ const adsGramBridge = {
             });
         },
 
-        destroyRewardAd: function()
+        destroyAd: function()
         {
             if (!this.isAvailableAdsGram())
             {
@@ -144,14 +144,14 @@ const adsGramBridge = {
         adsGram.initAdsGram(appId, isTesting, testingType, callback);
     },
 
-    ShowRewardAd: function(adShown, adShowFailed)
+    ShowAd: function(adShown, adShowFailed)
     {
-        adsGram.showRewardAd(adShown, adShowFailed);
+        adsGram.showNativeAd(adShown, adShowFailed);
     },
 
-    DestroyRewardAd: function()
+    DestroyAd: function()
     {
-        adsGram.destroyRewardAd();
+        adsGram.destroyAd();
     },
 
     AddListener: function(eventType, callback)

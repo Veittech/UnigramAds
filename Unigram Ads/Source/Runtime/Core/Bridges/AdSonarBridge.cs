@@ -18,7 +18,7 @@ namespace UnigramAds.Core.Bridge
             Action adShown, Action<string> showAdFailed);
 
         [DllImport("__Internal")]
-        private static extern void ShowRewardAd(string adUnit,
+        private static extern void ShowRewardedAd(string adUnit,
             Action adShown, Action<string> showAdFailed);
 
         [DllImport("__Internal")]
@@ -106,7 +106,7 @@ namespace UnigramAds.Core.Bridge
             OnAdShown = adShown;
             OnAdShowFailed = adShowFailed;
 
-            ShowRewardAd(adUnit, OnAdShow, OnAdShowFail);
+            ShowRewardedAd(adUnit, OnAdShow, OnAdShowFail);
         }
 
         internal static void ShowInterstitialAdByUnit(string adUnit,

@@ -25,7 +25,7 @@ const adSonarBridge = {
             dynCall('vi', callback, [1]);
         },
 
-        showRewardAd: function(adUnit,
+        showRewardedAd: function(adUnit, 
             successCallback, errorCallback)
         {
             if (!this.isAvailableAdsSonar())
@@ -193,9 +193,9 @@ const adSonarBridge = {
         adSonar.initAdSonar(appId, isTesting, callback);
     },
 
-    ShowRewardAd: function(adUnit, adShown, adShowFailed)
+    ShowRewardedAd: function(adUnit, adShown, adShowFailed)
     {
-        adSonar.showRewardAd(adUnit, adShown, adShowFailed);
+        adSonar.showRewardedAd(adUnit, adShown, adShowFailed);
     },
 
     ShowInterstitialAd: function(adUnit, adShown, adShowFailed)

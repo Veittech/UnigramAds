@@ -53,7 +53,7 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            AdsGramBridge.DestroyAd();
+            AdsGramBridge.DestroyNativeAd();
         }
 
         public void Destroy(string adUnit)
@@ -122,7 +122,7 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
-                AdsGramBridge.ShowAd(() =>
+                AdsGramBridge.ShowNativeAd(() =>
                 {
                     UnigramAdsLogger.Log("Reward ad successfully shown");
 

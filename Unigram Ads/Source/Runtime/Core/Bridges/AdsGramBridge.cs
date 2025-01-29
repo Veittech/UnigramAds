@@ -15,11 +15,11 @@ namespace UnigramAds.Core.Bridge
             bool isTesting, string testingType, Action<int> sdkInitialized);
 
         [DllImport("__Internal")]
-        private static extern void ShowRewardAd(
-            Action adShown, Action<string> showAdFailed);
+        private static extern void ShowAd(Action adShown,
+            Action<string> showAdFailed);
 
         [DllImport("__Internal")]
-        private static extern void DestroyRewardAd();
+        private static extern void DestroyAd();
 
         [DllImport("__Internal")]
         private static extern void AddListener(string eventId,
@@ -96,7 +96,8 @@ namespace UnigramAds.Core.Bridge
         {
             OnEventListenerInvoked = eventInvoked;
 
-            AddListener(AdEvents.GetEventByType(eventType), OnEventListenerInvoke);
+            AddListener(AdEvents.GetEventByType(
+                eventType), OnEventListenerInvoke);
         }
 
         internal static void UnSubscribeFromEvent(AdEventsTypes eventType,
@@ -104,7 +105,8 @@ namespace UnigramAds.Core.Bridge
         {
             OnEventListenerRemoved = eventUnsubscribed;
 
-            RemoveListener(AdEvents.GetEventByType(eventType), OnEventListenerRemove);
+            RemoveListener(AdEvents.GetEventByType(
+                eventType), OnEventListenerRemove);
         }
 
         internal static void Init(string adUnitId,
@@ -127,18 +129,18 @@ namespace UnigramAds.Core.Bridge
             InitAdsGram(adUnitId, false, targetType, OnInitialize);
         }
 
-        internal static void ShowAd(Action adShown,
+        internal static void ShowNativeAd(Action adShown,
             Action<string> adShowFailed)
         {
             OnRewardAdShown = adShown;
             OnRewardAdShowFailed = adShowFailed;
 
-            ShowRewardAd(OnRewardAdShow, OnRewardAdShowFail);
+            ShowAd(OnRewardAdShow, OnRewardAdShowFail);
         }
 
-        internal static void DestroyAd()
+        internal static void DestroyNativeAd()
         {
-            DestroyRewardAd();
+            DestroyAd();
         }
     }
 }
