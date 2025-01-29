@@ -78,7 +78,7 @@ const adsGramBridge = {
                     error.description || 'UNKNOWN_ERROR'), 'i8', ALLOC_NORMAL);
 
                 console.error(`Failed to show ad, reason: ${error}`);
-                console.error(`Error reason: ${JSON.stringify(result, null, 4)}`);
+                console.error(`Error reason: ${JSON.stringify(error, null, 4)}`);
 
                 dynCall('vi', errorCallback, [reasonPtr]);
 
