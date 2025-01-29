@@ -30,13 +30,15 @@ const adSonarBridge = {
 
             this.AdsSonarController = window.Sonar;
 
+            console.log(`Created ad sonar instance: ${window.Sonar}, url: ${newAdSonarScript}`);
+
             if (!this.isAvailableAdsSonar())
             {
                 console.warn(`Failed to initialize Ad Sonar bridge`);
 
-                dynCall('vi', callback, [0]);
+              //  dynCall('vi', callback, [0]);
 
-                return;
+               // return;
             }
 
             console.log(`Ads Sonar bridge initialized`);
