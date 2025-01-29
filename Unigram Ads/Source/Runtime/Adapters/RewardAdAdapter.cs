@@ -13,6 +13,13 @@ namespace UnigramAds.Core.Adapters
 
         public RewardAdAdapter()
         {
+            if (UnigramAdsSDK.Instance == null)
+            {
+                UnigramAdsLogger.LogWarning("Sdk is not initialized");
+
+                return;
+            }
+
             _unigramSDK = UnigramAdsSDK.Instance;
         }
 

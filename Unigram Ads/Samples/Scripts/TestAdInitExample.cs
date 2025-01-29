@@ -58,10 +58,10 @@ namespace UnigramAds.Demo
                 .Build((isSuccess, network) =>
                 {
                     Debug.Log($"Sdk initialized with status: {isSuccess}, network: {network}");
-
-                    _interstitialAd = new InterstitialAdAdapter();
-                    _rewardAd = new RewardAdAdapter();
                 });
+
+            _interstitialAd = new InterstitialAdAdapter();
+            _rewardAd = new RewardAdAdapter();
         }
 
         private void WatchAd()

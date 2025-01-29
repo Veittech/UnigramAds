@@ -19,20 +19,7 @@ const adSonarBridge = {
 
                 console.log('Activated debug mode for AdSonar bridge');
             }
-
-            let currentAdSonarScript = document.getElementById("ad-sonar-lib");
-
-            if (!currentAdSonarScript)
-            {
-                console.warn(`Failed to initialize Ad Sonar bridge`);
-
-                dynCall('vi', callback, [0]);
-
-                return;
-            }
-
-            currentAdSonarScript.remove();
-
+            
             let newLibInstance = document.createElement("script");
 
             newLibInstance.id = "ad-sonar-lib";

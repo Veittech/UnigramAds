@@ -18,13 +18,7 @@ namespace UnigramAds.Core
             {
                 if (_instance == null)
                 {
-                    lock (typeof(UnigramAdsSDK))
-                    {
-                        if (_instance == null)
-                        {
-                            _instance = new UnigramAdsSDK(null);
-                        }
-                    }
+                    throw new NullReferenceException($"{UnigramAdsLogger.PREFIX} Sdk is not ready for use");
                 }
 
                 return _instance;
@@ -136,7 +130,7 @@ namespace UnigramAds.Core
             {
                 if (adType == AdTypes.None)
                 {
-                    UnityEngine.Debug.Log($"{UnigramAdsLogger.PREFIX} " +
+                    Debug.Log($"{UnigramAdsLogger.PREFIX} " +
                         $"Unsuppored ad type, test mode disabled");
 
                     return this;
@@ -153,8 +147,7 @@ namespace UnigramAds.Core
 
             public Builder WithAdNetwork(AdNetworkTypes adNetwork)
             {
-                var foundedNetwork = this.ActiveAdNetworks.FirstOrDefault(
-                    network => network == adNetwork);
+                var foundedNetwork = this.ActiveAdNetworks.Find(network => network == adNetwork);
 
                 UnigramAdsLogger.Log($"Available networks: {JsonUtility.ToJson(ActiveAdNetworks)}");
                 UnigramAdsLogger.Log($"Founded network: {foundedNetwork}, current: {adNetwork}");
@@ -177,6 +170,11 @@ namespace UnigramAds.Core
                 if (!UnigramUtils.IsSupporedPlatform())
                 {
                     return null;
+                }
+
+                if (_instance == null)
+                {
+                    _instance = new UnigramAdsSDK(this);
                 }
 
                 var isActiveAdSonar = this.ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
@@ -220,8 +218,6 @@ namespace UnigramAds.Core
                         }
                     });
                 }
-
-                _instance = new UnigramAdsSDK(this);
 
                 return _instance;
             }
