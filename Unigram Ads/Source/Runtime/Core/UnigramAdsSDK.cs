@@ -4,6 +4,7 @@ using System.Linq;
 using UnigramAds.Common;
 using UnigramAds.Core.Bridge;
 using UnigramAds.Utils;
+using UnityEngine;
 
 namespace UnigramAds.Core
 {
@@ -155,9 +156,11 @@ namespace UnigramAds.Core
                 var foundedNetwork = this.ActiveAdNetworks.FirstOrDefault(
                     network => network == adNetwork);
 
+                UnigramAdsLogger.Log($"Available networks: {JsonUtility.ToJson(ActiveAdNetworks)}");
+
                 if (foundedNetwork == adNetwork)
                 {
-                    UnityEngine.Debug.LogWarning($"Ad network {adNetwork} already exist");
+                    Debug.LogWarning($"Ad network {adNetwork} already exist");
 
                     return this;
                 }
@@ -177,6 +180,9 @@ namespace UnigramAds.Core
 
                 var isActiveAdSonar = ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
                 var isActiveAdsGram = ActiveAdNetworks.Contains(AdNetworkTypes.AdsGram);
+
+                Debug.Log($"AdSonar status: {isActiveAdSonar}, " +
+                    $"AdsGram status: {isActiveAdsGram}");
 
                 if (isActiveAdSonar)
                 {

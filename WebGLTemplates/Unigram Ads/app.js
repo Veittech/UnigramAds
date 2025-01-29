@@ -88,6 +88,7 @@
     ).then((unityInstance) => 
     {
       unityInstanceRef = unityInstance;
+      
       loadingBar.style.display = "none";
     }
     ).catch((message) => 
