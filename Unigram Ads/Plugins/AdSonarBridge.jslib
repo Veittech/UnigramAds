@@ -7,8 +7,40 @@ const adSonarBridge = {
             return !!this.AdsSonarController;
         },
 
-        initAdSonar: function(callback)
+        initAdSonar: function(appId, isTesting, callback)
         {
+            const parsedAppId = UTF8ToString(appId);
+
+            let newAdSonarScript = `https://static.sonartech.io/lib/1.0.0/sonar.js?appId=${parsedAppId}`;
+
+            if (isTesting)
+            {
+                adSonarLib += "&isDebug=true";
+
+                console.log('Activated debug mode for AdSonar bridge');
+            }
+
+            let currentAdSonarScript = document.getElementById("ad-sonar-lib");
+
+            if (!currentAdSonarScript)
+            {
+                console.warn(`Failed to initialize Ad Sonar bridge`);
+
+                dynCall('vi', callback, [0]);
+
+                return;
+            }
+
+            currentAdSonarScript.remove();
+
+            let newLibInstance = document.createElement("script");
+
+            newLibInstance.id = "ad-sonar-lib";
+            newLibInstance.scr = newAdSonarScript;
+            newLibInstance.async = true;
+
+            document.head.appendChild(newLibInstance);
+
             this.AdsSonarController = window.Sonar;
 
             if (!this.isAvailableAdsSonar())
@@ -110,9 +142,9 @@ const adSonarBridge = {
         }
     },
 
-    InitAdSonar: function(callback)
+    InitAdSonar: function(appId, isTesting, callback)
     {
-        adSonar.initAdSonar(callback);
+        adSonar.initAdSonar(appId, isTesting, callback);
     },
 
     ShowAd: function(adUnit, adShown, adShowFailed)

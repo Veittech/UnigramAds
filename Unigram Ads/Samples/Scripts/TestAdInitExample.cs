@@ -15,8 +15,13 @@ namespace UnigramAds.Demo
 
         private UnigramAdsSDK _unigramAds;
 
-        private IVideoAd _videoAd;
+        private IVideoAd _interstitialAd;
         private IRewardVideoAd _rewardAd;
+
+        private readonly string AD_SONAR_APP_ID = "app_aaa2d5da";
+
+        private readonly string ADS_GRAM_INTER_ID = "";
+        private readonly string ADS_GRAM_REWARD_AD_ID = "";
 
         private readonly int REWARD_AMOUNT = 15;
         private readonly string FAKE_BALANCE_SAVE_KEY = UnigramUtils.FAKE_BALANCE_SAVE_KEY;
@@ -41,29 +46,34 @@ namespace UnigramAds.Demo
             _watchAdButton.onClick.AddListener(WatchAd);
             _watchRewaardAdButton.onClick.AddListener(WatchRewardAd);
 
-            _unigramAds = new UnigramAdsSDK.Builder(
-                "demo_inter", "demo_reward", "demo_banner")
+            if (!UnigramUtils.IsSupporedPlatform())
+            {
+                return;
+            }
+
+            _unigramAds = new UnigramAdsSDK.Builder(AD_SONAR_APP_ID,
+                "interstitial_placement", "rewarded_placement")
                 .WithTestMode()
                 .WithAdNetwork(AdNetworkTypes.AdSonar)
-                .Build((isSuccess) =>
+                .Build((isSuccess, network) =>
                 {
-                    Debug.Log($"Sdk initialized with status: {isSuccess}");
+                    Debug.Log($"Sdk initialized with status: {isSuccess}, network: {network}");
 
-                    _videoAd = new RewardAdAdapter();
+                    _interstitialAd = new InterstitialAdAdapter();
                     _rewardAd = new RewardAdAdapter();
                 });
         }
 
         private void WatchAd()
         {
-            if (_videoAd == null)
+            if (_interstitialAd == null)
             {
-                Debug.LogWarning("Video ad adapter is not exist");
+                Debug.LogWarning("Interstitial ad adapter is not exist");
 
                 return;
             }
 
-            _videoAd.Show();
+            _interstitialAd.Show();
         }
 
         private void WatchRewardAd()

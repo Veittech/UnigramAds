@@ -4,14 +4,14 @@ using UnigramAds.Utils;
 
 namespace UnigramAds.Core.Adapters
 {
-    public sealed class RewardAdAdapter : IRewardVideoAd
+    public sealed class InterstitialAdAdapter : IVideoAd
     {
         private readonly UnigramAdsSDK _unigramSDK;
 
         public event Action OnShowFinished;
         public event Action<string> OnShowFailed;
 
-        public RewardAdAdapter()
+        public InterstitialAdAdapter()
         {
             _unigramSDK = UnigramAdsSDK.Instance;
         }
@@ -19,11 +19,6 @@ namespace UnigramAds.Core.Adapters
         public void Show()
         {
             ShowAdWithCallback(() => { OnShowFinished?.Invoke(); });
-        }
-
-        public void Show(Action adFinished)
-        {
-            ShowAdWithCallback(adFinished);
         }
 
         public void Destroy()
@@ -59,15 +54,16 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            var rewardAdUnit = _unigramSDK.RewardedAdUnit;
+            var rewardAdUnit = _unigramSDK.InterstitialAdUnit;
 
             AdSonarBridge.RemoveAdUnit(rewardAdUnit, () =>
             {
-                UnigramAdsLogger.Log($"Rewarded unit {rewardAdUnit} from AdsSonar removed");
+                UnigramAdsLogger.Log($"Interstitial ad unit {rewardAdUnit} from AdsSonar removed");
             },
             (errorMessage) =>
             {
-                UnigramAdsLogger.LogWarning($"Failed to remove rewardedad unit {rewardAdUnit} from AdsSonar");
+                UnigramAdsLogger.LogWarning($"Failed to remove interstitial ad "+
+                    "unit {rewardAdUnit} from AdsSonar");
             });
         }
 
@@ -83,7 +79,7 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            var rewardAdUnit = _unigramSDK.RewardedAdUnit;
+            var rewardAdUnit = _unigramSDK.InterstitialAdUnit;
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
@@ -93,11 +89,11 @@ namespace UnigramAds.Core.Adapters
 
                     OnShowFinished?.Invoke();
 
-                    UnigramAdsLogger.Log("Rewarded ad successfully shown");
+                    UnigramAdsLogger.Log("Interstitial ad successfully shown");
                 },
                 (errorMessage) =>
                 {
-                    UnigramAdsLogger.LogWarning($"Failed to show rewarded " +
+                    UnigramAdsLogger.LogWarning($"Failed to show interstitial " +
                         $"ad, reason: {errorMessage}");
 
                     OnShowFailed?.Invoke(errorMessage);
@@ -116,8 +112,8 @@ namespace UnigramAds.Core.Adapters
                 },
                 (errorMessage) =>
                 {
-                    UnigramAdsLogger.LogWarning("Failed to show "+
-                        $"rewarded ad, reason: {errorMessage}");
+                    UnigramAdsLogger.LogWarning($"Failed to show interstitial " +
+                        $"ad, reason: {errorMessage}");
 
                     OnShowFailed?.Invoke(errorMessage);
                 });
@@ -126,7 +122,7 @@ namespace UnigramAds.Core.Adapters
 
         private bool IsAvailableAdUnit()
         {
-            return string.IsNullOrEmpty(_unigramSDK.RewardedAdUnit);
+            return string.IsNullOrEmpty(_unigramSDK.InterstitialAdUnit);
         }
     }
 }

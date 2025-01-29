@@ -7,10 +7,10 @@ const adsGramBridge = {
             return !!this.AdsGramController;
         },
 
-        initAdsGram: function(appId, 
+        initAdsGram: function(adUnit, 
             isTesting, testingType, callback)
         {
-            const adUnit = UTF8ToString(appId);
+            const parsedAdUnit = UTF8ToString(adUnit);
             const debugMode = UTF8ToString(testingType);
 
             if (this.AdsGramController)
@@ -24,7 +24,7 @@ const adsGramBridge = {
             {
                 this.AdsGramController = window.Adsgram.init(
                 { 
-                    blockId: adUnit,
+                    blockId: parsedAdUnit,
                     debug: !!isTesting,
                     debugBannerType: debugMode
                 });
