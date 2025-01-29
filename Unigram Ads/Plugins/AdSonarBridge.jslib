@@ -15,7 +15,7 @@ const adSonarBridge = {
 
             if (isTesting)
             {
-                adSonarLib += "&isDebug=true";
+                newAdSonarScript += "&isDebug=true";
 
                 console.log('Activated debug mode for AdSonar bridge');
             }
