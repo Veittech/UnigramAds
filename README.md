@@ -26,6 +26,20 @@ You can test the SDK without installation on a demo app [in the TMA (Telegram Mi
 
 [Download the latest version of the SDK via the .unityPackage file here](https://github.com/Veittech/UnigramAds/releases).
 
+# Initialization
+
+# Usage Template Interstitial Ad
+
+## Ad Showing
+
+## Ad Destroy
+
+# Usage Template Rewarded Ad
+
+## Ad Showing
+
+## Ad Destroy
+
 # Donations
 
 Ton Wallet (TON/NOT/USDt):
