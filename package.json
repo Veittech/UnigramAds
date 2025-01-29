@@ -1,0 +1,23 @@
+{
+    "name": "com.veittech.unigram.ads",
+    "version": "1.0.0",
+    "displayName": "Unigram Ads",
+    "description": "A library for displaying native ads in web applications created on Unity in the format of Telegram Mini Apps.",
+    "unity": "2020.3",
+    "unityRelease": "0f4",
+    "keywords": [
+      "Unity",
+      "Telegram",
+      "AdSonar",
+      "AdsGram",
+      "TMA",
+      "TWA",
+      "Telegram Mini App",
+      "WebGL"
+    ],
+    "author": 
+    {
+      "name": "MrVeit",
+      "email": "misster.veit@gmail.com"
+    }
+  }
