@@ -28,9 +28,9 @@ const adSonarBridge = {
 
             document.head.appendChild(newLibInstance);
 
-            this.AdsSonarController = window.Sonar;
+            this.AdsSonarController = newLibInstance;
 
-            console.log(`Created ad sonar instance: ${window.Sonar}, url: ${newAdSonarScript}`);
+            console.log(`Created ad sonar instance: ${this.AdsSonarController}, url: ${newAdSonarScript}`);
 
             if (!this.isAvailableAdsSonar())
             {
