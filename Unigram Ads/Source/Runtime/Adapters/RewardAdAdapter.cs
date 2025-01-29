@@ -142,7 +142,7 @@ namespace UnigramAds.Core.Adapters
 
         private bool IsAvailableAdUnit()
         {
-            return string.IsNullOrEmpty(_unigramSDK.RewardedAdUnit);
+            return !string.IsNullOrEmpty(_unigramSDK.RewardedAdUnit);
         }
     }
 }

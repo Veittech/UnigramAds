@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
 using UnigramAds.Common;
 using UnigramAds.Core.Bridge;
 using UnigramAds.Utils;
-using UnityEngine;
 
 namespace UnigramAds.Core
 {
@@ -46,6 +46,7 @@ namespace UnigramAds.Core
             this.IsTestMode = builder.IsTestMode;
 
             this.AppId = builder.AppId;
+
             this.InterstitialAdUnit = builder.InterstitialAdUnit;
             this.RewardedAdUnit = builder.RewardedAdUnit;
         }
@@ -147,18 +148,6 @@ namespace UnigramAds.Core
 
             public Builder WithAdNetwork(AdNetworkTypes adNetwork)
             {
-                var foundedNetwork = this.ActiveAdNetworks.Find(network => network == adNetwork);
-
-                UnigramAdsLogger.Log($"Available networks: {JsonUtility.ToJson(ActiveAdNetworks)}");
-                UnigramAdsLogger.Log($"Founded network: {foundedNetwork}, current: {adNetwork}");
-
-                if (foundedNetwork == adNetwork)
-                {
-                    Debug.LogWarning($"Ad network {adNetwork} already exist");
-
-                    //return this;
-                }
-
                 this.ActiveAdNetworks.Add(adNetwork);
 
                 return this;
@@ -179,9 +168,6 @@ namespace UnigramAds.Core
 
                 var isActiveAdSonar = this.ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
                 var isActiveAdsGram = this.ActiveAdNetworks.Contains(AdNetworkTypes.AdsGram);
-
-                Debug.Log($"AdSonar status: {isActiveAdSonar}, " +
-                    $"AdsGram status: {isActiveAdsGram}");
 
                 if (isActiveAdSonar)
                 {
@@ -217,6 +203,9 @@ namespace UnigramAds.Core
                         }
                     });
                 }
+
+                Debug.Log($"Available app id: {this.AppId}, inter unit: " +
+                    $"{this.InterstitialAdUnit}, reward unit: {this.RewardedAdUnit}");
 
                 return _instance;
             }

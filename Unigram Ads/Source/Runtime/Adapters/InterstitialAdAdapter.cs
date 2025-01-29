@@ -94,9 +94,6 @@ namespace UnigramAds.Core.Adapters
 
             var interstitialAdUnit = _unigramSDK.InterstitialAdUnit;
 
-            UnigramAdsLogger.Log($"AdSonar status: {_unigramSDK.IsAvailableAdSonar}, " +
-                $"AdsGram status: {_unigramSDK.IsAvailableAdsGram}");
-
             if (_unigramSDK.IsAvailableAdSonar)
             {
                 AdSonarBridge.ShowAdByUnitId(interstitialAdUnit, () =>
@@ -138,7 +135,7 @@ namespace UnigramAds.Core.Adapters
 
         private bool IsAvailableAdUnit()
         {
-            return string.IsNullOrEmpty(_unigramSDK.InterstitialAdUnit);
+            return !string.IsNullOrEmpty(_unigramSDK.InterstitialAdUnit);
         }
     }
 }
