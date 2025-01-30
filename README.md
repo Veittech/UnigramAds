@@ -28,7 +28,7 @@ You can test the SDK without installation on a demo app [in the TMA (Telegram Mi
 
 # Installation
 
-[Download the latest version of the SDK via the .unityPackage file here](https://github.com/Veittech/UnigramAds/releases).
+**[Download the latest version of the SDK via the .unityPackage file here](https://github.com/Veittech/UnigramAds/releases).**
 
 # Initialization
 
