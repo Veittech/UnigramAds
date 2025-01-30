@@ -7,6 +7,10 @@
 ![Last release](https://img.shields.io/github/release-date/Veittech/UnigramAds?color=318CE7&style=flat-square&logo=Dropbox&logoColor=E0FFFF)
 ![Downloads](https://img.shields.io/github/downloads/Veittech/UnigramAds/total?color=318CE7&style=flat-square&logo=codeigniter&logoColor=E0FFFF)
 
+<p align="left">
+ <img width="600px" src="https://github.com/Veittech/UnigramAds/blob/master/Assets/sdkBackgroundLogo.png" alt="qr"/>
+</p>
+
 **UNIGRAM ADS** is a user-friendly solution for displaying native ads in web applications created on Unity in the format of Telegram Mini Apps.
 
 # Technical Demo
@@ -187,6 +191,10 @@ Before you start building your unity project in WebGl, you need to do a few thin
 
 Go to the Build Settings window, then open `Project Settings -> Player -> Resolution and Presentation` and select the `Unigram Ads` build template. To display correctly in Telegram Web View, you need to set `Default Canvas Width` to 1080 and `Default Canvas Height` to 1920, as well as disable the Run in Background option.
 These are all the necessary actions that need to be performed for a successful project build and correct operation of the library functions.
+
+<p align="left">
+ <img width="600px" src="https://github.com/Veittech/UnigramAds/blob/master/Assets/buildTemplateOverview.png" alt="qr"/>
+</p>
 
 In case you specified `AdSonar advertising network` during SDK initialization - you need to make additional settings in the library build template.
 Currently, in version 1.0.1, **MANUAL EDITING** of the build template for this ad network is available (in future updates I will solve this problem in an automated way, probably).
