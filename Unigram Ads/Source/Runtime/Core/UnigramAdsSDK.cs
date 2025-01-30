@@ -35,6 +35,8 @@ namespace UnigramAds.Core
 
         public IReadOnlyList<AdNetworkTypes> ActiveAdNetworks { get; private set; }
 
+        public AdNetworkTypes CurrentNetwork { get; private set; }
+
         public AdTypes DebugAdType { get; private set; }
 
         public bool IsAvailableAdSonar => this.ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
@@ -53,6 +55,7 @@ namespace UnigramAds.Core
             this.RewardedAdUnit = builder.RewardedAdUnit;
 
             this.ActiveAdNetworks = builder.ActiveAdNetworks;
+            this.CurrentNetwork = builder.CurrentNetwork;
         }
 
         public sealed class Builder
@@ -67,31 +70,44 @@ namespace UnigramAds.Core
 
             internal AdTypes DebugAdType { get; private set; }
 
+            internal AdNetworkTypes CurrentNetwork { get; private set; }
+
             internal List<AdNetworkTypes> ActiveAdNetworks { get; private set; }
 
-            /// <summary>
-            /// Init AdSonar Bridge
-            /// </summary>
-            /// <param name="appId"></param>
-            /// <param name="interAdUnit"></param>
-            /// <param name="rewardAdUnit"></param>
+            public Builder(string interstitialAdUnit, 
+                string rewardedAdUnit)
+            {
+                this.InterstitialAdUnit = interstitialAdUnit;
+                this.RewardedAdUnit = rewardedAdUnit;
+
+                this.ActiveAdNetworks = new();
+            }
+
+            public Builder(AdTypes adType, string targetAdUnit)
+            {
+                this.ActiveAdNetworks = new();
+
+                if (adType == AdTypes.FullscreenStatic)
+                {
+                    this.InterstitialAdUnit = targetAdUnit;
+
+                    return;
+                }
+
+                this.RewardedAdUnit = targetAdUnit;
+            }
+
             public Builder(string appId, 
-                string interAdUnit, string rewardAdUnit)
+                string interstitialAdUnit, string rewardAdUnit)
             {
                 this.AppId = appId;
 
-                this.InterstitialAdUnit = interAdUnit;
+                this.InterstitialAdUnit = interstitialAdUnit;
                 this.RewardedAdUnit = rewardAdUnit;
 
                 this.ActiveAdNetworks = new();
             }
 
-            /// <summary>
-            /// Init AdSonar Bridge
-            /// </summary>
-            /// <param name="appId"></param>
-            /// <param name="interAdUnit"></param>
-            /// <param name="rewardAdUnit"></param>
             public Builder(string appId,
                 AdTypes adType, string targetAdUnit)
             {
@@ -107,20 +123,6 @@ namespace UnigramAds.Core
                 }
 
                 this.RewardedAdUnit = targetAdUnit;
-            }
-
-            /// <summary>
-            /// Init AdsGram Bridge
-            /// </summary>
-            /// <param name="blockId"></param>
-            public Builder(string blockId)
-            {
-                this.AppId = blockId;
-
-                this.InterstitialAdUnit = blockId;
-                this.RewardedAdUnit = blockId;
-
-                this.ActiveAdNetworks = new();
             }
 
             public Builder WithTestMode()
@@ -183,9 +185,11 @@ namespace UnigramAds.Core
                         initializationFinished?.Invoke(isSuccess,
                             AdNetworkTypes.AdSonar);
 
-                        IsInitialized = isSuccess;
+                        this.IsInitialized = isSuccess;
 
-                        if (IsInitialized)
+                        this.CurrentNetwork = AdNetworkTypes.AdSonar;
+
+                        if (this.IsInitialized)
                         {
                             UnigramAdsLogger.Log("AdSonar bridge initialized");
                         }
@@ -199,9 +203,11 @@ namespace UnigramAds.Core
                         initializationFinished?.Invoke(isSuccess,
                             AdNetworkTypes.AdsGram);
 
-                        IsInitialized = isSuccess;
+                        this.IsInitialized = isSuccess;
 
-                        if (IsInitialized)
+                        this.CurrentNetwork = AdNetworkTypes.AdsGram;
+
+                        if (this.IsInitialized)
                         {
                             UnigramAdsLogger.Log("AdsGram bridge initialized");
                         }

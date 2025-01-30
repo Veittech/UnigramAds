@@ -81,8 +81,7 @@ const adsGramBridge = {
             {
                 if (result.done)
                 {
-                    console.log(`Reward ads successfully shown, result: ${result}`);
-                    console.log(`JSON Result: ${JSON.stringify(result)}`);
+                    console.log(`Ad successfully shown, result: ${JSON.stringify(result)}`);
 
                     dynCall('v', successCallback);
 
