@@ -29,9 +29,6 @@ const adsGramBridge = {
 
         initAdsGram: function(callback)
         {
-            const parsedAdUnit = UTF8ToString(adUnit);
-            const debugMode = UTF8ToString(testingType);
-
             if (!window.Adsgram)
             {
                 console.warn('Failed to initialize AdsGram bridge');
@@ -57,11 +54,11 @@ const adsGramBridge = {
                     blockId: parsedAdUnit
                 });
 
-                console.log(`Ad unit ${adUnit} for AdsGram bridge initialized`);
+                console.log(`Ad unit ${parsedAdUnit} for AdsGram bridge initialized`);
             }
             catch (error)
             {
-                console.error(`Failed to initialize ad unit ${adUnit} for AdsGram bridge`);
+                console.error(`Failed to initialize ad unit ${parsedAdUnit} for AdsGram bridge`);
             }
         },
 
