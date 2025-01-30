@@ -18,7 +18,7 @@ You can test the SDK without installation on a demo app [in the TMA (Telegram Mi
 |         Ad Networks      | Interstitial  |   Rewarded   |    Banner    |
 | ------------------------ | :-----------: | :----------: | :----------: |
 | **AdsGram**              | ✔️           | ✔️           | ❌           |
-| **AdSonar**              | ✔️           | ✔️           | ❌           |
+| **AdSonar**              | ✔️           | ✔️           | ⚠️           |
 
 <sub>✔️ Supported</sub> &nbsp; <sub>❌ Not Supported</sub> &nbsp; <sub>⚠️ In progress</sub>
 
@@ -58,7 +58,7 @@ Yes, that's how simple the initialization goes, depending on the selected SDK pa
 Depending on the selected network, you need to create an account there beforehand and add an **EXISTING APPLICATION** under telegram.
 Then you need to go through manual moderation there to start showing real ads in your mini app.
 
- P.S.: [in AdsGram](https://docs.adsgram.ai/publisher/getting-started) you can't use ad blocks until your app is tested, but [AdSonar](https://docs.adsonar.co/pages/en/integration-guide/introduction) has a test mode.
+ P.S.: [in AdsGram](https://docs.adsgram.ai/publisher/getting-started) you can't use ad blocks until your app is moderated, but [AdSonar](https://docs.adsonar.co/pages/en/integration-guide/introduction) has a test mode.
 
 The `.WithAdNetwork` method specifies the desired ad network that is needed to initialize and display ads through it - `AdsGram` or `AdSonar` are available in this listing **MOMENT OF VERSION 1.0.1**. Yes, in the current version of the SDK, you can initialize **ONLY 1 ADVERTISING NETWORK** and then use it. In future updates I will expand the functionality to allow you to control the display of ads through the selected network.
 
@@ -82,7 +82,7 @@ var singleAdInit = new UnigramAdsSDK.Builder(
 
 # Usage Template
 
-Well, after we have initialized the SDK - we can start implementing the display of ads in your mini application. If you have any questions when working with the library API, you can always see the implementation of all available functions in the Example scene.
+Well, after we have initialized the SDK - we can start implementing the display of ads in your mini application. If you have **any questions** when working with the library API, you can always see the implementation of **all available functions** in the Example scene.
 
 ## Ad Showing
 
@@ -150,16 +150,16 @@ public void CreateInterstitial()
 {
     IVideoAd interstitialAd = new InterstitialAdAdapter();
 
-    interstitialAd.OnShowFinished += OnInterstitialAdShown;
-    interstitialAd.OnShowFailed += OnInterstitialAdShowFailed;
+    interstitialAd.OnShowFinished += InterstitialAdShown;
+    interstitialAd.OnShowFailed += InterstitialAdShowFailed;
 }
 
-public void OnInterstitialAdShown()
+public void InterstitialAdShown()
 {
     Debug.Log("Interstitial ad shown!");
 }
 
-public void OnInterstitialAdShowFailed(string error)
+public void InterstitialAdShowFailed(string error)
 {
     Debug.Warning($"Interstitial ad show failed, reason: {error}");
 }
@@ -192,6 +192,24 @@ Multichain Wallet (BTC/ETH/BNB/MATIC)
 ```
 0x231803Df809C207FaA330646BB5547fD087FEcA1
 ```
+
+# Build
+
+Before you start building your unity project in WebGl, you need to do a few things to make sure the library is working properly.
+
+Go to the Build Settings window, then open `Project Settings -> Player -> Resolution and Presentation` and select the `Unigram Ads` build template. To display correctly in Telegram Web View, you need to set `Default Canvas Width` to 1080 and `Default Canvas Height` to 1920, as well as disable the Run in Background option.
+These are all the necessary actions that need to be performed for a successful project build and correct operation of the library functions.
+
+In case you specified `AdSonar advertising network` during SDK initialization - you need to make additional settings in the library build template.
+Currently, in version 1.0.1, **MANUAL* editing of the build template for this ad network is available (in future updates I will solve this problem in an automated way, probably).
+Go to the `WebGLTemplates -> UnigramAds` folder and open the `index.html` file to edit this line:
+```html
+<script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_aaa2d5da&isDebug=true"></script>
+``` 
+
+In it you need to replace the `appId` parameter with the id of your application **from the AdSonar dashboard**. To activate the test mode, if you have not been moderated yet, you need to leave the `isDebug` parameter at the current value.
+
+Now you can build your project and test your ad display implementation!
 
 # Support
 
