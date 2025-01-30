@@ -2,6 +2,26 @@ const adSonarBridge = {
     $adSonar: {
         AdsSonarController: null,
 
+        validateAllocString: function(data)
+        {
+            let ptr;
+
+            if (typeof allocate === 'undefined')
+            {
+                console.log(`Detected Unity version 2023+`);
+
+                const length = lengthBytesUTF8(data) + 1;
+
+                ptr = _malloc(length);
+
+                stringToUTF8(data, ptr, length);
+
+                return ptr;
+            }
+
+            return allocate(intArrayFromString(data), 'i8', ALLOC_NORMAL);
+        },
+
         isAvailableAdsSonar: function()
         {
             return !!this.AdsSonarController;
@@ -32,8 +52,7 @@ const adSonarBridge = {
             {
                 console.warn('Ad Sonar sdk is not initialized');
 
-                const errorPtr = allocate(intArrayFromString(
-                    "NOT_INITIALIZED"), 'i8', ALLOC_NORMAL);
+                const errorPtr = adSonar.validateAllocString("NOT_INITIALIZED");
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
@@ -70,8 +89,7 @@ const adSonarBridge = {
                     console.error(`Failed to show rewarded ad, claimed status: `+
                         `${result.status}, reason: ${result.message}`);
                         
-                    const errorPtr = allocate(intArrayFromString(
-                        result.message), 'i8', ALLOC_NORMAL);
+                    const errorPtr = adSonar.validateAllocString(result.message);
 
                     dynCall('vi', errorCallback, [errorPtr]);
 
@@ -93,8 +111,7 @@ const adSonarBridge = {
             {
                 console.warn('Ad Sonar sdk is not initialized');
 
-                const errorPtr = allocate(intArrayFromString(
-                    "NOT_INITIALIZED"), 'i8', ALLOC_NORMAL);
+                const errorPtr = adSonar.validateAllocString("NOT_INITIALIZED");
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
@@ -131,8 +148,7 @@ const adSonarBridge = {
                     console.error(`Failed to show interstitial ad, claimed status: `+
                         `${result.status}, reason: ${result.message}`);
                         
-                    const errorPtr = allocate(intArrayFromString(
-                        result.message), 'i8', ALLOC_NORMAL);
+                    const errorPtr = adSonar.validateAllocString(result.message);
 
                     dynCall('vi', errorCallback, [errorPtr]);
 
@@ -167,8 +183,7 @@ const adSonarBridge = {
                 {
                     console.error(`Failed to remove ad unit, reasoN: ${result.message}`);
                         
-                    const errorPtr = allocate(intArrayFromString(
-                        result.message), 'i8', ALLOC_NORMAL);
+                    const errorPtr = adSonar.validateAllocString(result.message);
 
                     dynCall('vi', errorCallback, [errorPtr]);
 

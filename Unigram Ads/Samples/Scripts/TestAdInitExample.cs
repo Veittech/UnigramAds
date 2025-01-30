@@ -13,14 +13,13 @@ namespace UnigramAds.Demo
         [SerializeField] private Button _watchRewardAd;
         [SerializeField, Space] private Text _fakeBalanceBar;
 
-        private UnigramAdsSDK _unigramAds;
-
         private IVideoAd _interstitialAd;
         private IRewardVideoAd _rewardAd;
 
         private int _coinBalance;
 
-        private readonly string AD_SONAR_APP_ID = "app_aaa2d5da";
+        private readonly string AD_SONAR_INTER = "interstitial_placement";
+        private readonly string AD_SONAR_REWARD = "rewarded_placement";
 
         private readonly int REWARD_AMOUNT = 15;
         private readonly string FAKE_BALANCE_SAVE_KEY = UnigramUtils.FAKE_BALANCE_SAVE_KEY;
@@ -50,17 +49,10 @@ namespace UnigramAds.Demo
                 return;
             }
 
-            /*
-            _unigramAds = new UnigramAdsSDK.Builder(AD_SONAR_APP_ID,
-                "interstitial_placement", "rewarded_placement")
+            var unigramInstance = new UnigramAdsSDK.Builder(
+                AD_SONAR_INTER, AD_SONAR_REWARD)
                 .WithTestMode()
                 .WithAdNetwork(AdNetworkTypes.AdSonar)
-                .Build(OnInitialized);
-            */
-
-            _unigramAds = new UnigramAdsSDK.Builder("7364")
-                .WithTestMode()
-                .WithAdNetwork(AdNetworkTypes.AdsGram)
                 .Build(OnInitialized);
         }
 
@@ -100,8 +92,6 @@ namespace UnigramAds.Demo
 
         private void OnRewardAdFinished()
         {
-            Debug.Log("Ad watched, start fetching reward");
-
             Debug.Log($"Current balance: {_coinBalance}");
 
             _coinBalance += REWARD_AMOUNT;
@@ -109,6 +99,7 @@ namespace UnigramAds.Demo
             Debug.Log($"Updated balance: {_coinBalance}");
 
             SetBalance(_coinBalance);
+
             SaveBalance(_coinBalance);
         }
 

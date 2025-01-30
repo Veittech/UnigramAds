@@ -11,11 +11,10 @@ namespace UnigramAds.Core.Bridge
     {
 #region NATIVE_METHODS
         [DllImport("__Internal")]
-        private static extern void InitAdsGram(string appId, 
-            bool isTesting, string testingType, Action<int> sdkInitialized);
+        private static extern void InitAdsGram(Action<int> sdkInitialized);
 
         [DllImport("__Internal")]
-        private static extern void ShowAd(Action adShown,
+        private static extern void ShowAd(string adUnit, Action adShown,
             Action<string> showAdFailed);
 
         [DllImport("__Internal")]
@@ -109,33 +108,20 @@ namespace UnigramAds.Core.Bridge
                 eventType), OnEventListenerRemove);
         }
 
-        internal static void Init(string adUnitId,
-            bool isTesting, AdTypes testingType, Action<bool> sdkInitialized)
+        internal static void Init(Action<bool> sdkInitialized)
         {
             OnInitialized = sdkInitialized;
 
-            var targetType = AvailableAdTypes.GetAdByType(testingType);
-
-            InitAdsGram(adUnitId, isTesting, targetType, OnInitialize);
+            InitAdsGram(OnInitialize);
         }
 
-        internal static void Init(string adUnitId,
-            Action<bool> sdkInitialized)
-        {
-            OnInitialized = sdkInitialized;
-
-            var targetType = AvailableAdTypes.GetAdByType(AdTypes.FullscreenStatic);
-
-            InitAdsGram(adUnitId, false, targetType, OnInitialize);
-        }
-
-        internal static void ShowNativeAd(Action adShown,
-            Action<string> adShowFailed)
+        internal static void ShowNativeAd(string adUnitId, 
+            Action adShown, Action<string> adShowFailed)
         {
             OnRewardAdShown = adShown;
             OnRewardAdShowFailed = adShowFailed;
 
-            ShowAd(OnRewardAdShow, OnRewardAdShowFail);
+            ShowAd(adUnitId, OnRewardAdShow, OnRewardAdShowFail);
         }
 
         internal static void DestroyNativeAd()
