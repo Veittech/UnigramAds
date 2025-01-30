@@ -7,7 +7,7 @@
 ![Last release](https://img.shields.io/github/release-date/Veittech/UnigramAds?color=318CE7&style=flat-square&logo=Dropbox&logoColor=E0FFFF)
 ![Downloads](https://img.shields.io/github/downloads/Veittech/UnigramAds/total?color=318CE7&style=flat-square&logo=codeigniter&logoColor=E0FFFF)
 
-**UNIGRAM ADS** is a user-friendly solution for working with the TON ecosystem inside web applications on Unity.
+**UNIGRAM ADS** is a user-friendly solution for displaying native ads in web applications created on Unity in the format of Telegram Mini Apps.
 
 # Technical Demo
 
