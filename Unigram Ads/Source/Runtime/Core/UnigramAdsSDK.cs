@@ -194,7 +194,7 @@ namespace UnigramAds.Core
 
                 if (isActiveAdsGram)
                 {
-                    AdsGramBridge.Init(this.AppId, (isSuccess) =>
+                    AdsGramBridge.Init((isSuccess) =>
                     {
                         initializationFinished?.Invoke(isSuccess,
                             AdNetworkTypes.AdsGram);

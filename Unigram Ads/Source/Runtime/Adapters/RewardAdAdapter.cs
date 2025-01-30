@@ -93,8 +93,6 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            var rewardAdUnit = _unigramSDK.RewardedAdUnit;
-
             if (!IsAvailableAdUnit())
             {
                 UnigramAdsLogger.LogWarning("Reward ad unit is not available");
@@ -102,41 +100,38 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
+            var rewardAdUnit = _unigramSDK.RewardedAdUnit;
+
+            OnShowFinished = adShown;
+
             if (_unigramSDK.IsAvailableAdSonar)
             {
-                AdSonarBridge.ShowRewardedAdByUnit(rewardAdUnit, () =>
-                {
-                    UnigramAdsLogger.Log("Rewarded ad successfully shown");
-
-                    adShown?.Invoke();
-                },
-                (errorMessage) =>
-                {
-                    UnigramAdsLogger.LogWarning($"Failed to show rewarded " +
-                        $"ad, reason: {errorMessage}");
-
-                    OnShowFailed?.Invoke(errorMessage);
-                });
+                AdSonarBridge.ShowRewardedAdByUnit(
+                    rewardAdUnit, OnAdShown, OnAdShowFailed);
 
                 return;
             }
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
-                AdsGramBridge.ShowNativeAd(() =>
-                {
-                    UnigramAdsLogger.Log("Reward ad successfully shown");
-
-                    adShown?.Invoke();
-                },
-                (errorMessage) =>
-                {
-                    UnigramAdsLogger.LogWarning("Failed to show "+
-                        $"rewarded ad, reason: {errorMessage}");
-
-                    OnShowFailed?.Invoke(errorMessage);
-                });
+                AdsGramBridge.ShowNativeAd(
+                    rewardAdUnit, OnAdShown, OnAdShowFailed);
             }
+        }
+
+        private void OnAdShown()
+        {
+            OnShowFinished?.Invoke();
+
+            UnigramAdsLogger.Log("Reward ad successfully shown");
+        }
+
+        private void OnAdShowFailed(string errorMessage)
+        {
+            OnShowFailed?.Invoke(errorMessage);
+
+            UnigramAdsLogger.LogWarning("Failed to show "+
+                $"rewarded ad, reason: {errorMessage}");
         }
 
         private bool IsAvailableAdUnit()

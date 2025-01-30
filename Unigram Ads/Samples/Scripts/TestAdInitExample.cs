@@ -50,10 +50,10 @@ namespace UnigramAds.Demo
                 return;
             }
 
-            _unigramAds = new UnigramAdsSDK.Builder(AD_SONAR_APP_ID,
-                "interstitial_placement", "rewarded_placement")
+            _unigramAds = new UnigramAdsSDK.Builder(
+                string.Empty, "int-7235", "7364")
                 .WithTestMode()
-                .WithAdNetwork(AdNetworkTypes.AdSonar)
+                .WithAdNetwork(AdNetworkTypes.AdsGram)
                 .Build(OnInitialized);
         }
 

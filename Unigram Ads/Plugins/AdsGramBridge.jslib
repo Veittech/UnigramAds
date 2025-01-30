@@ -2,49 +2,74 @@ const adsGramBridge = {
     $adsGram: {
         AdsGramController: null,
 
+        parseAllocString: function(data)
+        {
+            let ptr;
+
+            if (typeof allocate === 'undefined')
+            {
+                console.log(`Detected Unity version 2023+`);
+
+                const length = lengthBytesUTF8(data) + 1;
+
+                ptr = _malloc(length);
+
+                stringToUTF8(data, ptr, length);
+
+                return ptr;
+            }
+
+            return allocate(intArrayFromString(data), 'i8', ALLOC_NORMAL);
+        },
+
         isAvailableAdsGram: function()
         {
             return !!this.AdsGramController;
         },
 
-        initAdsGram: function(adUnit, 
-            isTesting, testingType, callback)
+        initAdsGram: function(callback)
         {
             const parsedAdUnit = UTF8ToString(adUnit);
             const debugMode = UTF8ToString(testingType);
 
-            if (this.AdsGramController)
+            if (!window.Adsgram)
             {
-                console.warn('Sdk already initialized');
+                console.warn('Failed to initialize AdsGram bridge');
+
+                dynCall('vi', callback, [0]);
 
                 return;
             }
+
+            console.log('AdsGram bridge initialized');
+
+            dynCall('vi', callback, [1]);
+        },
+
+        initAdUnit: function(adUnit)
+        {
+            const parsedAdUnit = UTF8ToString(adUnit);
 
             try
             {
                 this.AdsGramController = window.Adsgram.init(
                 { 
-                    blockId: parsedAdUnit,
-                    debug: !!isTesting,
-                    debugBannerType: debugMode
+                    blockId: parsedAdUnit
                 });
 
-                dynCall('vi', callback, [1]);
+                console.log(`Ad unit ${adUnit} for AdsGram bridge initialized`);
             }
             catch (error)
             {
-                console.error(`Initialization AdsGram failed, ${error}`);
-
-                dynCall('vi', callback, [0]);
+                console.error(`Failed to initialize ad unit ${adUnit} for AdsGram bridge`);
             }
         },
 
-        showNativeAd: function(successCallback, errorCallback)
+        showNativeAd: function(adUnit, successCallback, errorCallback)
         {
-            if (!this.isAvailableAdsGram())
+            if (!window.Adsgram)
             {
-                const reasonPtr = allocate(intArrayFromString(
-                    "SDK_NOT_INITIALIZED"), 'i8', ALLOC_NORMAL);
+                const reasonPtr = adsGram.parseAllocString("SDK_NOT_INITIALIZED");
 
                 dynCall('vi', errorCallback, [reasonPtr]);
 
@@ -52,6 +77,8 @@ const adsGramBridge = {
 
                 return;
             }
+
+            adsGram.initAdUnit(adUnit);
 
             this.AdsGramController.show().then((result) =>
             {
@@ -65,8 +92,7 @@ const adsGramBridge = {
                     return;
                 }
 
-                const errorPtr = allocate(intArrayFromString(
-                    result.description), 'i8', ALLOC_NORMAL);
+                const errorPtr = adsGram.parseAllocString(result.description);
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
@@ -74,8 +100,8 @@ const adsGramBridge = {
             })
             .catch((error) =>
             {
-                const reasonPtr = allocate(intArrayFromString(
-                    error.description || 'UNKNOWN_ERROR'), 'i8', ALLOC_NORMAL);
+                const reasonPtr = adsGram.parseAllocString(
+                    error.description || 'UNKNOWN_ERROR');
 
                 console.error(`Failed to show ad, reason: ${error}`);
                 console.error(`Error reason: ${JSON.stringify(error, null, 4)}`);
@@ -103,8 +129,7 @@ const adsGramBridge = {
             if (this.isAvailableAdsGram())
             {
                 const eventId = UTF8ToString(eventType);
-                const eventIdPtr = allocate(intArrayFromString(
-                    eventId), 'i8', ALLOC_NORMAL);
+                const eventIdPtr = adsGram.parseAllocString(eventId);
 
                 this.AdsGramController.addEventListener(eventId, function ()
                 {
@@ -122,8 +147,7 @@ const adsGramBridge = {
             if (this.isAvailableAdsGram())
             {
                 const eventId = UTF8ToString(eventType);
-                const eventIdPtr = allocate(intArrayFromString(
-                    eventId), 'i8', ALLOC_NORMAL);
+                const eventIdPtr = adsGram.parseAllocString(eventId);
 
                 this.AdsGramController.removeEventListener(
                     UTF8ToString(eventType), function ()
@@ -138,15 +162,14 @@ const adsGramBridge = {
         }
     },
 
-    InitAdsGram: function(appId, 
-        isTesting, testingType, callback)
+    InitAdsGram: function(callback)
     {
-        adsGram.initAdsGram(appId, isTesting, testingType, callback);
+        adsGram.initAdsGram(callback);
     },
 
-    ShowAd: function(adShown, adShowFailed)
+    ShowAd: function(adUnit, adShown, adShowFailed)
     {
-        adsGram.showNativeAd(adShown, adShowFailed);
+        adsGram.showNativeAd(adUnit, adShown, adShowFailed);
     },
 
     DestroyAd: function()
