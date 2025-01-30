@@ -143,7 +143,7 @@ public sealed class AdShowImplementExample: MonoBehaviour
 
 As you can see, then, reward ads have the ability to immediately get the result of a successful display `by specifying a callback` right in the method!
 
-In case you want to directly subscribe to events about `successful display` or `unsuccessful display` of an ad with an error - then the implementation is as follows:
+In case you want to directly subscribe to events about `successful show` or `unsuccessful show` of an ad with an error - then the implementation is as follows:
 
 ```c#
 public void CreateInterstitial()
@@ -176,10 +176,29 @@ In this case, I have separate methods for each ad network. In future updates I w
 IVideoAd interstitialAd = new InterstitialAdAdapter();
 
 interstitialAd.Destroy(); // TODO: destroys the ad block from AdsGram
-interstitialAd.Destroy('your-interstitial-unit'); // TODO: destroys the ad block from AdSonar
+interstitialAd.Destroy("your-interstitial-unit"); // TODO: destroys the ad block from AdSonar
 ```
 
 The logic for releasing memory from an ad block is **EXACTLY THE SAME** for a rewarded ad.
+
+# Build
+
+Before you start building your unity project in WebGl, you need to do a few things to make sure the library is working properly.
+
+Go to the Build Settings window, then open `Project Settings -> Player -> Resolution and Presentation` and select the `Unigram Ads` build template. To display correctly in Telegram Web View, you need to set `Default Canvas Width` to 1080 and `Default Canvas Height` to 1920, as well as disable the Run in Background option.
+These are all the necessary actions that need to be performed for a successful project build and correct operation of the library functions.
+
+In case you specified `AdSonar advertising network` during SDK initialization - you need to make additional settings in the library build template.
+Currently, in version 1.0.1, **MANUAL EDITING** of the build template for this ad network is available (in future updates I will solve this problem in an automated way, probably).
+Go to the `WebGLTemplates -> UnigramAds` folder and open the `index.html` file to edit this line:
+```html
+<script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_aaa2d5da&isDebug=true"></script>
+``` 
+
+In it you need to replace the `appId` parameter with the id of your application **from the AdSonar dashboard**.
+To activate the test mode, if you have not been moderated yet, you need to leave the `isDebug` parameter at the current value.
+
+Now you can build your project and test your ad display implementation!
 
 # Donations
 
@@ -192,24 +211,6 @@ Multichain Wallet (BTC/ETH/BNB/MATIC)
 ```
 0x231803Df809C207FaA330646BB5547fD087FEcA1
 ```
-
-# Build
-
-Before you start building your unity project in WebGl, you need to do a few things to make sure the library is working properly.
-
-Go to the Build Settings window, then open `Project Settings -> Player -> Resolution and Presentation` and select the `Unigram Ads` build template. To display correctly in Telegram Web View, you need to set `Default Canvas Width` to 1080 and `Default Canvas Height` to 1920, as well as disable the Run in Background option.
-These are all the necessary actions that need to be performed for a successful project build and correct operation of the library functions.
-
-In case you specified `AdSonar advertising network` during SDK initialization - you need to make additional settings in the library build template.
-Currently, in version 1.0.1, **MANUAL* editing of the build template for this ad network is available (in future updates I will solve this problem in an automated way, probably).
-Go to the `WebGLTemplates -> UnigramAds` folder and open the `index.html` file to edit this line:
-```html
-<script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_aaa2d5da&isDebug=true"></script>
-``` 
-
-In it you need to replace the `appId` parameter with the id of your application **from the AdSonar dashboard**. To activate the test mode, if you have not been moderated yet, you need to leave the `isDebug` parameter at the current value.
-
-Now you can build your project and test your ad display implementation!
 
 # Support
 
