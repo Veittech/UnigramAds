@@ -32,7 +32,7 @@ You can test the SDK without installation on a demo app [in the TMA (Telegram Mi
 
 # Initialization
 
-In the SDK `as of version 1.0.1` access **ONLY MANUAL INITIALIZATION** of one of the selected networks via code.
+In the SDK `as of version 1.0.2` access **ONLY MANUAL INITIALIZATION** of one of the selected networks via code.
 
 Below is a test example of what this might look like for one of the available networks:
 ```c#
@@ -62,9 +62,10 @@ Yes, that's how simple the initialization goes, depending on the selected SDK pa
 Depending on the selected network, you need to create an account there beforehand and add an **EXISTING APPLICATION** under telegram.
 Then you need to go through manual moderation there to start showing real ads in your mini app.
 
- P.S.: [in AdsGram](https://docs.adsgram.ai/publisher/getting-started) you can't use ad blocks until your app is moderated, but [AdSonar](https://docs.adsonar.co/pages/en/integration-guide/introduction) has a test mode.
+ P.S: [in AdsGram](https://docs.adsgram.ai/publisher/getting-started) you can't use ad blocks until your app is moderated, but [AdSonar](https://docs.adsonar.co/pages/en/integration-guide/introduction) has a test mode.
 
-The `.WithAdNetwork` method specifies the desired ad network that is needed to initialize and display ads through it - `AdsGram` or `AdSonar` are available in this listing **MOMENT OF VERSION 1.0.1**. Yes, in the current version of the SDK, you can initialize **ONLY 1 ADVERTISING NETWORK** and then use it. In future updates I will expand the functionality to allow you to control the display of ads through the selected network.
+The `.WithAdNetwork` method specifies the ad network that is required to initialize and display ads. 
+**IN VERSION 1.0.2 AND LOWER** only `AdsGram` and `AdSonar` are available, possibly others will be added to this list in the future. Yes, in the current version of the SDK you can initialize **ONLY ONE AD NETWORK** and then use it. In future updates, I will extend the functionality so that you can control the display of ads through the selected network.
 
 The `.WithTestMode()` method only adjusts the status of showing messages for debug from the SDK. Due to peculiarities of test mode initialization of one of the networks, this functionality does not work properly yet.
 
@@ -147,7 +148,7 @@ public sealed class AdShowImplementExample: MonoBehaviour
 
 As you can see, then, reward ads have the ability to immediately get the result of a successful display `by specifying a callback` right in the method!
 
-In case you want to directly subscribe to events about `successful show` or `unsuccessful show` of an ad with an error - then the implementation is as follows:
+In case you want to directly subscribe to events about `successful` or `unsuccessful` show of an ad with an error - then the implementation is as follows:
 
 ```c#
 public void CreateInterstitial()
@@ -173,14 +174,14 @@ The same implementation of result subscription is suitable for `reward ad`, so t
 
 ## Ad Destroy
 
-I don't know how up to date this implementation is, but based on the ad networks documentation - they `free memory` from an ad unit that is not planned to be used anymore
+I don't know how up-to-date this implementation is, but it appears from the ad networks documentation that they `free memory` from an ad unit that is no longer planned to be used.
+So you can free memory from a previously used ad unit `in an ad display`.
+**STARTING FROM VERSION 1.0.2**, the method itself reads the active ad network and accesses the JS bridge to `call the appropriate logic` in the library.
 
-In this case, I have separate methods for each ad network. In future updates I will change the logic of these methods so that it is **one for all**:
 ```c#
 IVideoAd interstitialAd = new InterstitialAdAdapter();
 
-interstitialAd.Destroy(); // TODO: destroys the ad block from AdsGram
-interstitialAd.Destroy("your-interstitial-unit"); // TODO: destroys the ad block from AdSonar
+interstitialAd.Destroy();
 ```
 
 The logic for releasing memory from an ad block is **EXACTLY THE SAME** for a rewarded ad.
@@ -196,8 +197,10 @@ These are all the necessary actions that need to be performed for a successful p
  <img width="600px" src="https://github.com/Veittech/UnigramAds/blob/master/Assets/buildTemplateOverview.png" alt="qr"/>
 </p>
 
-In case you specified `AdSonar advertising network` during SDK initialization - you need to make additional settings in the library build template.
-Currently, in version 1.0.1, **MANUAL EDITING** of the build template for this ad network is available (in future updates I will solve this problem in an automated way, probably).
+In case you specified `AdSonar` ad network during SDK initialization - you need to make additional settings in the library build template.
+Starting with `version 1.0.2 and below`, there is **MANUAL EDITING** of the build template for this ad network available.
+In future updates I will solve this problem in an automated way, maybe!
+
 Go to the `WebGLTemplates -> UnigramAds` folder and open the `index.html` file to edit this line:
 ```html
 <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_aaa2d5da&isDebug=true"></script>
