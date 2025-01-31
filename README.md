@@ -62,10 +62,10 @@ Yes, that's how simple the initialization goes, depending on the selected SDK pa
 Depending on the selected network, you need to create an account there beforehand and add an **EXISTING APPLICATION** under telegram.
 Then you need to go through manual moderation there to start showing real ads in your mini app.
 
- P.S.: [in AdsGram](https://docs.adsgram.ai/publisher/getting-started) you can't use ad blocks until your app is moderated, but [AdSonar](https://docs.adsonar.co/pages/en/integration-guide/introduction) has a test mode.
+ P.S: [in AdsGram](https://docs.adsgram.ai/publisher/getting-started) you can't use ad blocks until your app is moderated, but [AdSonar](https://docs.adsonar.co/pages/en/integration-guide/introduction) has a test mode.
 
 The `.WithAdNetwork` method specifies the ad network that is required to initialize and display ads. 
-**IN VERSION 1.0.2 AND LOWER** only `AdsGram` and `AdSonar` are available, possibly others will be added to this list in the future. Yes, in the current version of the SDK you can initialize **ONLY 1 ad network** and then use it. In future updates, I will extend the functionality so that you can control the display of ads through the selected network.
+**IN VERSION 1.0.2 AND LOWER** only `AdsGram` and `AdSonar` are available, possibly others will be added to this list in the future. Yes, in the current version of the SDK you can initialize **ONLY ONE AD NETWORK** and then use it. In future updates, I will extend the functionality so that you can control the display of ads through the selected network.
 
 The `.WithTestMode()` method only adjusts the status of showing messages for debug from the SDK. Due to peculiarities of test mode initialization of one of the networks, this functionality does not work properly yet.
 
@@ -148,7 +148,7 @@ public sealed class AdShowImplementExample: MonoBehaviour
 
 As you can see, then, reward ads have the ability to immediately get the result of a successful display `by specifying a callback` right in the method!
 
-In case you want to directly subscribe to events about `successful show` or `unsuccessful show` of an ad with an error - then the implementation is as follows:
+In case you want to directly subscribe to events about `successful` or `unsuccessful` show of an ad with an error - then the implementation is as follows:
 
 ```c#
 public void CreateInterstitial()
@@ -176,7 +176,7 @@ The same implementation of result subscription is suitable for `reward ad`, so t
 
 I don't know how up-to-date this implementation is, but it appears from the ad networks documentation that they `free memory` from an ad unit that is no longer planned to be used.
 So you can free memory from a previously used ad unit `in an ad display`.
-**BEGINNING FROM VERSION 1.0.2**, the method itself reads the active ad network and accesses the JS bridge to `call the appropriate logic` in the library.
+**STARTING FROM VERSION 1.0.2**, the method itself reads the active ad network and accesses the JS bridge to `call the appropriate logic` in the library.
 
 ```c#
 IVideoAd interstitialAd = new InterstitialAdAdapter();
@@ -197,8 +197,10 @@ These are all the necessary actions that need to be performed for a successful p
  <img width="600px" src="https://github.com/Veittech/UnigramAds/blob/master/Assets/buildTemplateOverview.png" alt="qr"/>
 </p>
 
-In case you specified `AdSonar advertising network` during SDK initialization - you need to make additional settings in the library build template.
-Currently, in version 1.0.2, **MANUAL EDITING** of the build template for this ad network is available (in future updates I will solve this problem in an automated way, probably).
+In case you specified `AdSonar` ad network during SDK initialization - you need to make additional settings in the library build template.
+Starting with `version 1.0.2 and below`, there is **MANUAL EDITING** of the build template for this ad network available.
+In future updates I will solve this problem in an automated way, maybe!
+
 Go to the `WebGLTemplates -> UnigramAds` folder and open the `index.html` file to edit this line:
 ```html
 <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_aaa2d5da&isDebug=true"></script>
