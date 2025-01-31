@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using UnigramAds.Core.Bridge;
 using UnigramAds.Utils;
 
@@ -26,18 +25,11 @@ namespace UnigramAds.Core.Adapters
 
         public void Show()
         {
-            ShowAdWithCallback(() => { OnShowFinished?.Invoke(); });
+            ShowAdWithCallback();
         }
 
         public void Destroy()
         {
-            if (!_unigramSDK.IsAvailableAdsGram)
-            {
-                UnigramAdsLogger.LogWarning("AdsGram ad units is not available");
-
-                return;
-            }
-
             if (!UnigramUtils.IsSupporedPlatform() ||
                 !IsAvailableAdUnit())
             {
@@ -46,41 +38,32 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            AdsGramBridge.DestroyNativeAd();
-        }
+            var interstitialAdUnit = _unigramSDK.InterstitialAdUnit;
 
-        public void Destroy(string adUnit)
-        {
-            if (!_unigramSDK.IsAvailableAdSonar)
+            if (_unigramSDK.IsAvailableAdsGram)
             {
-                UnigramAdsLogger.LogWarning("AdSonar ad units is not available");
+                AdsGramBridge.DestroyNativeAd();
 
-                return;
+                UnigramAdsLogger.Log($"Interstitial ad unit " +
+                    $"{interstitialAdUnit} from AdsGram removed!");
             }
 
-            if (!UnigramUtils.IsSupporedPlatform() ||
-                !IsAvailableAdUnit())
+            if (_unigramSDK.IsAvailableAdSonar)
             {
-                UnigramAdsLogger.LogWarning("Ad unit is not available");
-
-                return;
+                AdSonarBridge.RemoveAdUnit(interstitialAdUnit, () =>
+                {
+                    UnigramAdsLogger.Log($"Interstitial ad unit " +
+                        $"{interstitialAdUnit} from AdsSonar removed!");
+                },
+                (errorMessage) =>
+                {
+                    UnigramAdsLogger.LogWarning($"Failed to remove " +
+                        $"interstitial ad unit {interstitialAdUnit} from AdsSonar");
+                });
             }
-
-            var rewardAdUnit = _unigramSDK.InterstitialAdUnit;
-
-            AdSonarBridge.RemoveAdUnit(rewardAdUnit, () =>
-            {
-                UnigramAdsLogger.Log($"Interstitial ad unit "+
-                    $"{rewardAdUnit} from AdsSonar removed");
-            },
-            (errorMessage) =>
-            {
-                UnigramAdsLogger.LogWarning($"Failed to remove "+
-                    $"interstitial ad unit {rewardAdUnit} from AdsSonar");
-            });
         }
 
-        private void ShowAdWithCallback(Action adShown)
+        private void ShowAdWithCallback()
         {
             if (!UnigramUtils.IsSupporedPlatform())
             {
@@ -100,8 +83,6 @@ namespace UnigramAds.Core.Adapters
             {
                 AdSonarBridge.ShowInterstitialAdByUnit(
                     interstitialAdUnit, OnAdShown, OnAdShowFailed);
-
-                return;
             }
 
             if (_unigramSDK.IsAvailableAdsGram)
@@ -115,7 +96,8 @@ namespace UnigramAds.Core.Adapters
         {
             OnShowFinished?.Invoke();
 
-            UnigramAdsLogger.Log("Interstitial ad successfully shown");
+            UnigramAdsLogger.Log($"Interstitial ad successfully " +
+                $"shown by network: {_unigramSDK.CurrentNetwork}");
         }
 
         private void OnAdShowFailed(string errorMessage)
@@ -123,7 +105,7 @@ namespace UnigramAds.Core.Adapters
             OnShowFailed?.Invoke(errorMessage);
 
             UnigramAdsLogger.LogWarning("Failed to show " +
-                $"rewarded ad, reason: {errorMessage}");
+                $"rewarded ad by network {_unigramSDK.CurrentNetwork}, reason: {errorMessage}");
         }
 
         private bool IsAvailableAdUnit()

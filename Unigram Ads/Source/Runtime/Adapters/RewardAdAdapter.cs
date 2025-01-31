@@ -25,10 +25,7 @@ namespace UnigramAds.Core.Adapters
 
         public void Show()
         {
-            ShowAdWithCallback(() =>
-            {
-                OnShowFinished?.Invoke();
-            });
+            ShowAdWithCallback();
         }
 
         public void Show(Action adFinished)
@@ -38,33 +35,6 @@ namespace UnigramAds.Core.Adapters
 
         public void Destroy()
         {
-            if (!_unigramSDK.IsAvailableAdsGram)
-            {
-                UnigramAdsLogger.LogWarning("AdsGram ad units is not available");
-
-                return;
-            }
-
-            if (!UnigramUtils.IsSupporedPlatform() ||
-                !IsAvailableAdUnit())
-            {
-                UnigramAdsLogger.LogWarning("Reward ad unit is not available");
-
-                return;
-            }
-
-            AdsGramBridge.DestroyNativeAd();
-        }
-
-        public void Destroy(string adUnit)
-        {
-            if (!_unigramSDK.IsAvailableAdSonar)
-            {
-                UnigramAdsLogger.LogWarning("AdSonar ad units is not available");
-
-                return;
-            }
-
             if (!UnigramUtils.IsSupporedPlatform() ||
                 !IsAvailableAdUnit())
             {
@@ -75,18 +45,30 @@ namespace UnigramAds.Core.Adapters
 
             var rewardAdUnit = _unigramSDK.RewardedAdUnit;
 
-            AdSonarBridge.RemoveAdUnit(rewardAdUnit, () =>
+            if (_unigramSDK.IsAvailableAdsGram)
             {
-                UnigramAdsLogger.Log($"Rewarded unit {rewardAdUnit} from AdsSonar removed");
-            },
-            (errorMessage) =>
+                AdsGramBridge.DestroyNativeAd();
+
+                UnigramAdsLogger.Log($"Rewarded ad unit " +
+                    $"{rewardAdUnit} from AdsGram removed!");
+            }
+
+            if (_unigramSDK.IsAvailableAdSonar)
             {
-                UnigramAdsLogger.LogWarning($"Failed to remove rewardedad "+
-                    "unit {rewardAdUnit} from AdsSonar");
-            });
+                AdSonarBridge.RemoveAdUnit(rewardAdUnit, () =>
+                {
+                    UnigramAdsLogger.Log($"Rewarded ad unit " +
+                        $"{rewardAdUnit} from AdsSonar removed!");
+                },
+                (errorMessage) =>
+                {
+                    UnigramAdsLogger.LogWarning($"Failed to remove " +
+                        $"rewarded ad unit {rewardAdUnit} from AdsSonar");
+                });
+            }
         }
 
-        private void ShowAdWithCallback(Action adShown)
+        private void ShowAdWithCallback(Action adShown = null)
         {
             if (!UnigramUtils.IsSupporedPlatform())
             {
@@ -102,14 +84,15 @@ namespace UnigramAds.Core.Adapters
 
             var rewardAdUnit = _unigramSDK.RewardedAdUnit;
 
-            OnShowFinished = adShown;
+            if (adShown != null)
+            {
+                OnShowFinished = adShown;
+            }
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
                 AdSonarBridge.ShowRewardedAdByUnit(
                     rewardAdUnit, OnAdShown, OnAdShowFailed);
-
-                return;
             }
 
             if (_unigramSDK.IsAvailableAdsGram)
@@ -123,15 +106,16 @@ namespace UnigramAds.Core.Adapters
         {
             OnShowFinished?.Invoke();
 
-            UnigramAdsLogger.Log("Reward ad successfully shown");
+            UnigramAdsLogger.Log($"Reward ad successfully shown " +
+                $"by network {_unigramSDK.CurrentNetwork}");
         }
 
         private void OnAdShowFailed(string errorMessage)
         {
             OnShowFailed?.Invoke(errorMessage);
 
-            UnigramAdsLogger.LogWarning("Failed to show "+
-                $"rewarded ad, reason: {errorMessage}");
+            UnigramAdsLogger.LogWarning("Failed to show rewarded ad by " +
+                $"network {_unigramSDK.CurrentNetwork}, reason: {errorMessage}");
         }
 
         private bool IsAvailableAdUnit()
