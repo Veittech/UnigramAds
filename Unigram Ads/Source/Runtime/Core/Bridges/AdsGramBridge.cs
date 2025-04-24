@@ -14,7 +14,7 @@ namespace UnigramAds.Core.Bridge
         private static extern void InitAdsGram(Action<int> sdkInitialized);
 
         [DllImport("__Internal")]
-        private static extern void ShowAd(string adUnit, Action adShown,
+        private static extern void ShowAd(string adUnit, bool isTestMode, Action adShown,
             Action<string> showAdFailed);
 
         [DllImport("__Internal")]
@@ -115,13 +115,13 @@ namespace UnigramAds.Core.Bridge
             InitAdsGram(OnInitialize);
         }
 
-        internal static void ShowNativeAd(string adUnitId, 
+        internal static void ShowNativeAd(string adUnitId, bool isTestMode, 
             Action adShown, Action<string> adShowFailed)
         {
             OnRewardAdShown = adShown;
             OnRewardAdShowFailed = adShowFailed;
 
-            ShowAd(adUnitId, OnRewardAdShow, OnRewardAdShowFail);
+            ShowAd(adUnitId, isTestMode, OnRewardAdShow, OnRewardAdShowFail);
         }
 
         internal static void DestroyNativeAd()

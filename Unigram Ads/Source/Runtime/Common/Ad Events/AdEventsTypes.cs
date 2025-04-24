@@ -5,9 +5,14 @@ namespace UnigramAds.Common
         None,
         Started,
         Skipped,
+        Shown,
+        Closed,
+        Completed,
+        Refreshed,
         RewardClaimed,
         WatchFailed,
         NotAvailable,
-        TryNonStopWatch
+        TryNonStopWatch,
+        TooLongSession,
     }
 }

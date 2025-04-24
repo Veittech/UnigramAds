@@ -97,8 +97,8 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
-                AdsGramBridge.ShowNativeAd(
-                    rewardAdUnit, OnAdShown, OnAdShowFailed);
+                AdsGramBridge.ShowNativeAd(rewardAdUnit, 
+                    _unigramSDK.IsTestMode, OnAdShown, OnAdShowFailed);
             }
         }
 

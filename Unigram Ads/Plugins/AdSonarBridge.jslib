@@ -8,7 +8,7 @@ const adSonarBridge = {
 
             if (typeof allocate === 'undefined')
             {
-                console.log(`Detected Unity version 2023+`);
+                console.log(`[Unigram Ads] Detected Unity version 2023+`);
 
                 const length = lengthBytesUTF8(data) + 1;
 
@@ -27,20 +27,20 @@ const adSonarBridge = {
             return !!this.AdsSonarController;
         },
 
-        initAdSonar: function(appId, isTesting, callback)
+        initAdSonar: function(appId, isTestMode, callback)
         {
             this.AdsSonarController = window.Sonar;
 
             if (!this.isAvailableAdsSonar())
             {
-                console.warn(`Failed to initialize Ad Sonar bridge`);
+                console.warn(`[Unigram Ads] Failed to initialize Ad Sonar bridge`);
 
                 dynCall('vi', callback, [0]);
 
                 return;
             }
 
-            console.log(`Ads Sonar bridge initialized`);
+            console.log(`[Unigram Ads] Ads Sonar bridge initialized`);
 
             dynCall('vi', callback, [1]);
         },
@@ -50,7 +50,7 @@ const adSonarBridge = {
         {
             if (!this.isAvailableAdsSonar())
             {
-                console.warn('Ad Sonar sdk is not initialized');
+                console.warn('[Unigram Ads] Ad Sonar sdk is not initialized');
 
                 const errorPtr = adSonar.validateAllocString("NOT_INITIALIZED");
 
@@ -63,30 +63,46 @@ const adSonarBridge = {
 
             const adPlacement = UTF8ToString(adUnit);
 
+            let adEventId;
+
             this.AdsSonarController.show({ adUnit: adPlacement, loader: true, 
                 onStart: () =>
                 {
-                    console.log('Rewarded ad started loading');
+                    adEventId = "AD_LOADED";
+                    
+                    console.log('[Unigram Ads] Rewarded ad started loading');
                 },
                 onShow: () =>
                 {
-                    console.log('Rewarded ad start showing');
+                    adEventId = "AD_SHOWN";
+
+                    console.log('[Unigram Ads] Rewarded ad start showing');
+                },
+                onReward: () =>
+                {
+                    adEventId = "AD_REWARD_RECEIVED"
+
+                    console.log('[Unigram Ads] Rewarded ad finished and reward claimed');
                 },
                 onError: () =>
                 {
-                    console.warn('Rewarded ad show failed');
+                    adEventId = "AD_SHOW_FAILED";
+
+                    console.warn('[Unigram Ads] Rewarded ad load/show failed');
                 },
                 onClose: () =>
                 {
-                    console.log('Rewarded ad closed');
+                    adEventId = "AD_CLOSED";
+
+                    console.log('[Unigram Ads] Rewarded ad closed');
                 },
             }).then((result) =>
             {
-                console.log(`Ad Sonar ad status: ${result.status}`);
+                console.log(`[Unigram Ads] Ad Sonar ad status: ${result.status}`);
 
                 if (result.status === 'error')
                 {
-                    console.error(`Failed to show rewarded ad, claimed status: `+
+                    console.error(`[Unigram Ads] Failed to show rewarded ad, claimed status: `+
                         `${result.status}, reason: ${result.message}`);
                         
                     const errorPtr = adSonar.validateAllocString(result.message);
@@ -98,9 +114,12 @@ const adSonarBridge = {
                     return;
                 }
 
+                console.log(`[Unigram Ads] Received Ad Sonar reward ad `+
+                    `status id after show: ${adEventId}`);
+
                 dynCall('v', successCallback);
 
-                console.log(`Rewarded Ad successfully shown`);
+                console.log(`[Unigram Ads] Rewarded Ad successfully shown`);
             });
         },
 
@@ -109,7 +128,7 @@ const adSonarBridge = {
         {
             if (!this.isAvailableAdsSonar())
             {
-                console.warn('Ad Sonar sdk is not initialized');
+                console.warn('[Unigram Ads] Ad Sonar sdk is not initialized');
 
                 const errorPtr = adSonar.validateAllocString("NOT_INITIALIZED");
 
@@ -122,31 +141,41 @@ const adSonarBridge = {
 
             const adPlacement = UTF8ToString(adUnit);
 
+            let adEventId;
+
             this.AdsSonarController.show({ adUnit: adPlacement, loader: true, 
                 onStart: () =>
                 {
-                    console.log('Interstitial ad started loading');
+                    adEventId = "AD_LOADED";
+
+                    console.log('[Unigram Ads] Interstitial ad started loading');
                 },
                 onShow: () =>
                 {
-                    console.log('Interstitial ad start showing');
+                    adEventId = "AD_SHOWN";
+
+                    console.log('[Unigram Ads] Interstitial ad start showing');
                 },
                 onError: () =>
                 {
-                    console.warn('Interstitial ad show failed');
+                    adEventId = "AD_SHOW_FAILED";
+
+                    console.warn('[Unigram Ads] Interstitial ad show failed');
                 },
                 onClose: () =>
                 {
-                    console.log('Interstitial ad closed');
+                    adEventId = "AD_CLOSED";
+
+                    console.log('[Unigram Ads] Interstitial ad closed');
                 },
             }).then((result) =>
             {
-                console.log(`Ad sonar ad status: ${result.status}`);
+                console.log(`[Unigram Ads] Ad sonar ad status: ${result.status}`);
 
                 if (result.status === 'error')
                 {
-                    console.error(`Failed to show interstitial ad, claimed status: `+
-                        `${result.status}, reason: ${result.message}`);
+                    console.error(`[Unigram Ads] Failed to show interstitial ad, `+
+                        `claimed status: ${result.status}, reason: ${result.message}`);
                         
                     const errorPtr = adSonar.validateAllocString(result.message);
 
@@ -157,7 +186,10 @@ const adSonarBridge = {
                     return;
                 }
 
-                console.log(`Interstitial Ad successfully shown`);
+                console.log(`[Unigram Ads] Interstitial Ad successfully shown`);
+
+                console.log(`[Unigram Ads] Received Ad Sonar reward ad `+
+                    `status id after show: ${adEventId}`);
 
                 dynCall('v', successCallback);
 
@@ -170,7 +202,7 @@ const adSonarBridge = {
         {
             if (!this.isAvailableAdsSonar())
             {
-                console.warn(`Ad Sonar sdk is not initialized`);
+                console.warn(`[Unigram Ads] Ad Sonar sdk is not initialized`);
 
                 return;
             } 
@@ -181,7 +213,7 @@ const adSonarBridge = {
             {   
                 if (result.status === 'error')
                 {
-                    console.error(`Failed to remove ad unit, reasoN: ${result.message}`);
+                    console.error(`[Unigram Ads] Failed to remove ad unit, reasoN: ${result.message}`);
                         
                     const errorPtr = adSonar.validateAllocString(result.message);
 
@@ -192,16 +224,16 @@ const adSonarBridge = {
                     return;
                 }
 
-                console.log(`Ad unit successfully removed, status: ${result.status}`);
+                console.log(`[Unigram Ads] Ad unit successfully removed, status: ${result.status}`);
 
                 dynCall('v', successCallback);
             });
         }
     },
 
-    InitAdSonar: function(appId, isTesting, callback)
+    InitAdSonar: function(appId, isTestMode, callback)
     {
-        adSonar.initAdSonar(appId, isTesting, callback);
+        adSonar.initAdSonar(appId, isTestMode, callback);
     },
 
     ShowRewardedAd: function(adUnit, adShown, adShowFailed)

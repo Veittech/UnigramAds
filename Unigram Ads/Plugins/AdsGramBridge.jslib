@@ -8,7 +8,7 @@ const adsGramBridge = {
 
             if (typeof allocate === 'undefined')
             {
-                console.log(`Detected Unity version 2023+`);
+                console.log(`[Unigram Ads] Detected Unity version 2023+`);
 
                 const length = lengthBytesUTF8(data) + 1;
 
@@ -31,19 +31,19 @@ const adsGramBridge = {
         {
             if (!window.Adsgram)
             {
-                console.warn('Failed to initialize AdsGram bridge');
+                console.warn('[Unigram Ads] Failed to initialize AdsGram bridge');
 
                 dynCall('vi', callback, [0]);
 
                 return;
             }
 
-            console.log('AdsGram bridge initialized');
+            console.log('[Unigram Ads] AdsGram bridge initialized');
 
             dynCall('vi', callback, [1]);
         },
 
-        initAdUnit: function(adUnit)
+        initAdUnit: function(adUnit, isTestMode)
         {
             const parsedAdUnit = UTF8ToString(adUnit);
 
@@ -51,18 +51,19 @@ const adsGramBridge = {
             {
                 this.AdsGramController = window.Adsgram.init(
                 { 
-                    blockId: parsedAdUnit
+                    blockId: parsedAdUnit,
+                    debug: isTestMode
                 });
 
-                console.log(`Ad unit ${parsedAdUnit} for AdsGram bridge initialized`);
+                console.log(`[Unigram Ads] Ad unit ${parsedAdUnit} for AdsGram bridge initialized`);
             }
             catch (error)
             {
-                console.error(`Failed to initialize ad unit ${parsedAdUnit} for AdsGram bridge`);
+                console.error(`[Unigram Ads] Failed to initialize ad unit ${parsedAdUnit} for AdsGram bridge`);
             }
         },
 
-        showNativeAd: function(adUnit, successCallback, errorCallback)
+        showNativeAd: function(adUnit, isTestMode, successCallback, errorCallback)
         {
             if (!window.Adsgram)
             {
@@ -75,13 +76,14 @@ const adsGramBridge = {
                 return;
             }
 
-            adsGram.initAdUnit(adUnit);
+            adsGram.initAdUnit(adUnit, isTestMode);
 
-            this.AdsGramController.show().then((result) =>
+            this.AdsGramController.show()
+            .then((result) =>
             {
                 if (result.done)
                 {
-                    console.log(`Ad successfully shown, result: ${JSON.stringify(result)}`);
+                    console.log(`[Unigram Ads] Ad successfully shown, result: ${JSON.stringify(result)}`);
 
                     dynCall('v', successCallback);
 
@@ -99,8 +101,8 @@ const adsGramBridge = {
                 const reasonPtr = adsGram.parseAllocString(
                     error.description || 'UNKNOWN_ERROR');
 
-                console.error(`Failed to show ad, reason: ${error}`);
-                console.error(`Error reason: ${JSON.stringify(error, null, 4)}`);
+                console.error(`[Unigram Ads] Failed to show ad, reason: ${error}`);
+                console.error(`[Unigram Ads] Error reason: ${JSON.stringify(error, null, 4)}`);
 
                 dynCall('vi', errorCallback, [reasonPtr]);
 
@@ -112,7 +114,7 @@ const adsGramBridge = {
         {
             if (!this.isAvailableAdsGram())
             {
-                console.warn(`Sdk is not initialized`);
+                console.warn(`[Unigram Ads] Sdk is not initialized`);
 
                 return;
             }
@@ -129,7 +131,7 @@ const adsGramBridge = {
 
                 this.AdsGramController.addEventListener(eventId, function ()
                 {
-                    console.log(`Invoked event with id: ${eventId}`);
+                    console.log(`[Unigram Ads] Invoked event with id: ${eventId}`);
 
                     dynCall('vi', callback, [eventIdPtr]);
 
@@ -148,7 +150,7 @@ const adsGramBridge = {
                 this.AdsGramController.removeEventListener(
                     UTF8ToString(eventType), function ()
                 {
-                    console.log(`Unsubscribed from event with id: ${eventId}`);
+                    console.log(`[Unigram Ads] Unsubscribed from event with id: ${eventId}`);
 
                     dynCall('vi', callback, [eventIdPtr]);
 
@@ -163,9 +165,9 @@ const adsGramBridge = {
         adsGram.initAdsGram(callback);
     },
 
-    ShowAd: function(adUnit, adShown, adShowFailed)
+    ShowAd: function(adUnit, isTestMode, adShown, adShowFailed)
     {
-        adsGram.showNativeAd(adUnit, adShown, adShowFailed);
+        adsGram.showNativeAd(adUnit, isTestMode, adShown, adShowFailed);
     },
 
     DestroyAd: function()
