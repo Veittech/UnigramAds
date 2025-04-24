@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnigramAds.Core.Bridge;
 using UnigramAds.Core.Events;
 using UnigramAds.Common;
@@ -9,6 +10,8 @@ namespace UnigramAds.Core.Adapters
     public sealed class InterstitialAdAdapter : IVideoAd, IDisposable
     {
         private readonly UnigramAdsSDK _unigramSDK;
+
+        private readonly Dictionary<AdEventsTypes, Action> _callbacksMap;
 
         private AdNetworkTypes _currentNetwork => _unigramSDK.CurrentNetwork;
 
@@ -31,9 +34,14 @@ namespace UnigramAds.Core.Adapters
 
             _unigramSDK = UnigramAdsSDK.Instance;
 
-            NativeEventBus.Subscribe(AdEventsTypes.Started, AdLoaded);
-            NativeEventBus.Subscribe(AdEventsTypes.Closed, AdClosed);
-            NativeEventBus.Subscribe(AdEventsTypes.Shown, AdShown);
+            _callbacksMap = new()
+            {
+                { AdEventsTypes.Started, AdLoaded },
+                { AdEventsTypes.Closed, AdClosed },
+                { AdEventsTypes.Shown, AdShown },
+            };
+
+            NativeEventBus.Subscribe(NativeAdTypes.interstitial, _callbacksMap);
         }
 
         public void Dispose()
@@ -43,9 +51,7 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            NativeEventBus.Unsubscribe(AdEventsTypes.Started, AdLoaded);
-            NativeEventBus.Unsubscribe(AdEventsTypes.Closed, AdClosed);
-            NativeEventBus.Unsubscribe(AdEventsTypes.Shown, AdShown);
+            NativeEventBus.Unsubscribe(NativeAdTypes.interstitial, _callbacksMap);
 
             _isDisposed = true;
         }
@@ -109,7 +115,7 @@ namespace UnigramAds.Core.Adapters
             if (_unigramSDK.IsAvailableAdSonar)
             {
                 AdSonarBridge.ShowInterstitialAdByUnit(
-                    interstitialAdUnit, AdShown, AdShowFailed);
+                    interstitialAdUnit, () => { }, AdShowFailed);
             }
 
             if (_unigramSDK.IsAvailableAdsGram)

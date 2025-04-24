@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnigramAds.Core.Bridge;
 using UnigramAds.Core.Events;
 using UnigramAds.Common;
@@ -9,6 +10,8 @@ namespace UnigramAds.Core.Adapters
     public sealed class RewardAdAdapter : IRewardVideoAd, IDisposable
     {
         private readonly UnigramAdsSDK _unigramSDK;
+
+        private readonly Dictionary<AdEventsTypes, Action> _callbacksMap;
 
         private AdNetworkTypes _currentNetwork => _unigramSDK.CurrentNetwork;
 
@@ -32,10 +35,15 @@ namespace UnigramAds.Core.Adapters
 
             _unigramSDK = UnigramAdsSDK.Instance;
 
-            NativeEventBus.Subscribe(AdEventsTypes.Started, AdLoaded);
-            NativeEventBus.Subscribe(AdEventsTypes.Closed, AdClosed);
-            NativeEventBus.Subscribe(AdEventsTypes.Shown, AdShown);
-            NativeEventBus.Subscribe(AdEventsTypes.RewardClaimed, AdRewarded);
+            _callbacksMap = new()
+            {
+                { AdEventsTypes.Started, AdLoaded },
+                { AdEventsTypes.Closed, AdClosed },
+                { AdEventsTypes.Shown, AdShown },
+                { AdEventsTypes.RewardClaimed, AdRewarded },
+            };
+
+            NativeEventBus.Subscribe(NativeAdTypes.rewarded, _callbacksMap);
         }
 
         public void Show()
@@ -90,10 +98,7 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            NativeEventBus.Unsubscribe(AdEventsTypes.Started, AdLoaded);
-            NativeEventBus.Unsubscribe(AdEventsTypes.Closed, AdClosed);
-            NativeEventBus.Unsubscribe(AdEventsTypes.Shown, AdShown);
-            NativeEventBus.Unsubscribe(AdEventsTypes.RewardClaimed, AdRewarded);
+            NativeEventBus.Unsubscribe(NativeAdTypes.rewarded, _callbacksMap);
 
             _isDisposed = true;
         }
@@ -122,7 +127,7 @@ namespace UnigramAds.Core.Adapters
             if (_unigramSDK.IsAvailableAdSonar)
             {
                 AdSonarBridge.ShowRewardedAdByUnit(
-                    rewardAdUnit, AdRewarded, AdShowFailed);
+                    rewardAdUnit, () => { }, AdShowFailed);
             }
 
             if (_unigramSDK.IsAvailableAdsGram)

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnigramAds.Common;
 using UnigramAds.Utils;
+using UnigramAds.Data;
 
 namespace UnigramAds.Core.Events
 {
@@ -10,38 +11,19 @@ namespace UnigramAds.Core.Events
 
         private static NativeAdEventListener _instance;
 
-        private static NativeAdEventListener _instanceReference
-        {
-            get
-            {
-                if (_instance)
-                {
-                    return _instance;
-                }
-
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = FindObjectOfType<NativeAdEventListener>();
-                    }
-                }
-
-                return _instance;
-            }
-        }
-
         private void Awake()
         {
             CreateInstance();
         }
 
-
-        public void ReceiveEvent(string eventId)
+        public void ReceiveEvent(string eventPayload)
         {
-            var eventType = AdEvents.GetEventById(eventId);
+            var parsedPayload = JsonUtility.FromJson<NativeEventPayloadData>(eventPayload);
 
-            NativeEventBus.Invoke(eventType);
+            var eventType = AdEvents.GetEventById(parsedPayload.EventId);
+            var adType = parsedPayload.AdType;
+
+            NativeEventBus.Invoke(adType, eventType);
         }
 
         private void CreateInstance()
