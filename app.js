@@ -47,7 +47,7 @@
     streamingAssetsUrl: "StreamingAssets",
     companyName: "Veittech",
     productName: "Unigram Ads",
-    productVersion: "1.0",
+    productVersion: "1.0.3",
     showBanner: unityShowBanner,
   };
 
