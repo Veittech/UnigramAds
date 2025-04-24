@@ -126,14 +126,17 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
-                AdSonarBridge.ShowRewardedAdByUnit(
-                    rewardAdUnit, () => { }, AdShowFailed);
+                AdSonarBridge.ShowRewardedAdByUnit(rewardAdUnit, () =>
+                {
+                    adShown?.Invoke();
+                },
+                AdShowFailed);
             }
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
                 AdsGramBridge.ShowNativeAd(rewardAdUnit, 
-                    _unigramSDK.IsTestMode, AdShown, AdShowFailed);
+                    _unigramSDK.IsTestMode, AdRewarded, AdShowFailed);
             }
         }
 
@@ -141,8 +144,8 @@ namespace UnigramAds.Core.Adapters
         {
             OnRewarded?.Invoke();
 
-            UnigramAdsLogger.Log($"Rewarded ad successfully shown " +
-                $"by network {_unigramSDK.CurrentNetwork}");
+            UnigramAdsLogger.Log($"Rewarded ad successfully " +
+                $"received reward by network {_unigramSDK.CurrentNetwork}");
         }
 
         private void AdLoaded()

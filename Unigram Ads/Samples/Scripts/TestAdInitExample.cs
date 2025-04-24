@@ -34,16 +34,17 @@ namespace UnigramAds.Demo
                 return;
             }
 
-            _interstitialAd.OnShown += InterstitialAdShown;
-            _interstitialAd.OnShowFailed += InterstitialAdShowFailed;
+            _interstitialAd.OnShown -= InterstitialAdShown;
+            _interstitialAd.OnShowFailed -= InterstitialAdShowFailed;
 
             if (_rewardAd == null)
             {
                 return;
             }
 
-            _rewardAd.OnRewarded += RewardedAdShown;
-            _rewardAd.OnShowFailed += RewardedAdShowFailed;
+            _rewardAd.OnShown -= RewardedAdShown;
+            _rewardAd.OnRewarded -= RewardedAdReceivedReward;
+            _rewardAd.OnShowFailed -= RewardedAdShowFailed;
         }
 
         private void Start()
@@ -128,7 +129,8 @@ namespace UnigramAds.Demo
             _interstitialAd.OnShown += InterstitialAdShown;
             _interstitialAd.OnShowFailed += InterstitialAdShowFailed;
 
-            _rewardAd.OnRewarded += RewardedAdShown;
+            _rewardAd.OnShown += RewardedAdShown;
+            _rewardAd.OnRewarded += RewardedAdReceivedReward;
             _rewardAd.OnShowFailed += RewardedAdShowFailed;
 
             Debug.Log($"Sdk initialized with status: " +
@@ -145,9 +147,14 @@ namespace UnigramAds.Demo
             Debug.LogWarning($"Failed to show interstitial ad, reason: {error}");
         }
 
-        private void RewardedAdShown()
+        private void RewardedAdReceivedReward()
         {
             Debug.Log("Rewarded ad shown and award claimed");
+        }
+
+        private void RewardedAdShown()
+        {
+            Debug.Log("Rewarded ad successfully shown");
         }
 
         private void RewardedAdShowFailed(string error)
