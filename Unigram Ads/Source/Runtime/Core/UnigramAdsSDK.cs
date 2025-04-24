@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnigramAds.Common;
 using UnigramAds.Core.Bridge;
+using UnigramAds.Core.Events;
 using UnigramAds.Utils;
 
 namespace UnigramAds.Core
@@ -170,10 +171,7 @@ namespace UnigramAds.Core
                     return null;
                 }
 
-                if (_instance == null)
-                {
-                    _instance = new UnigramAdsSDK(this);
-                }
+                _instance ??= new UnigramAdsSDK(this);
 
                 var isActiveAdSonar = this.ActiveAdNetworks.Contains(AdNetworkTypes.AdSonar);
                 var isActiveAdsGram = this.ActiveAdNetworks.Contains(AdNetworkTypes.AdsGram);
@@ -214,7 +212,16 @@ namespace UnigramAds.Core
                     });
                 }
 
+                CreateNativeListener();
+
                 return _instance;
+            }
+
+            private void CreateNativeListener()
+            {
+                var newListener = new GameObject("NativeAdEventListener");
+
+                newListener.AddComponent<NativeAdEventListener>();
             }
         }
     }

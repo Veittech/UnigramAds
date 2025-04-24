@@ -34,7 +34,7 @@ namespace UnigramAds.Demo
                 return;
             }
 
-            _interstitialAd.OnShowFinished += InterstitialAdShown;
+            _interstitialAd.OnShown += InterstitialAdShown;
             _interstitialAd.OnShowFailed += InterstitialAdShowFailed;
 
             if (_rewardAd == null)
@@ -42,7 +42,7 @@ namespace UnigramAds.Demo
                 return;
             }
 
-            _rewardAd.OnShowFinished += RewardedAdShown;
+            _rewardAd.OnRewarded += RewardedAdShown;
             _rewardAd.OnShowFailed += RewardedAdShowFailed;
         }
 
@@ -125,10 +125,10 @@ namespace UnigramAds.Demo
             _interstitialAd = new InterstitialAdAdapter();
             _rewardAd = new RewardAdAdapter();
 
-            _interstitialAd.OnShowFinished += InterstitialAdShown;
+            _interstitialAd.OnShown += InterstitialAdShown;
             _interstitialAd.OnShowFailed += InterstitialAdShowFailed;
 
-            _rewardAd.OnShowFinished += RewardedAdShown;
+            _rewardAd.OnRewarded += RewardedAdShown;
             _rewardAd.OnShowFailed += RewardedAdShowFailed;
 
             Debug.Log($"Sdk initialized with status: " +

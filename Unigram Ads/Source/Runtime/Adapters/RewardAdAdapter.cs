@@ -1,14 +1,24 @@
 using System;
 using UnigramAds.Core.Bridge;
+using UnigramAds.Core.Events;
+using UnigramAds.Common;
 using UnigramAds.Utils;
 
 namespace UnigramAds.Core.Adapters
 {
-    public sealed class RewardAdAdapter : IRewardVideoAd
+    public sealed class RewardAdAdapter : IRewardVideoAd, IDisposable
     {
         private readonly UnigramAdsSDK _unigramSDK;
 
-        public event Action OnShowFinished;
+        private AdNetworkTypes _currentNetwork => _unigramSDK.CurrentNetwork;
+
+        private bool _isDisposed;
+
+        public event Action OnLoaded;
+        public event Action OnClosed;
+        public event Action OnShown;
+        public event Action OnRewarded;
+
         public event Action<string> OnShowFailed;
 
         public RewardAdAdapter()
@@ -21,6 +31,11 @@ namespace UnigramAds.Core.Adapters
             }
 
             _unigramSDK = UnigramAdsSDK.Instance;
+
+            NativeEventBus.Subscribe(AdEventsTypes.Started, AdLoaded);
+            NativeEventBus.Subscribe(AdEventsTypes.Closed, AdClosed);
+            NativeEventBus.Subscribe(AdEventsTypes.Shown, AdShown);
+            NativeEventBus.Subscribe(AdEventsTypes.RewardClaimed, AdRewarded);
         }
 
         public void Show()
@@ -68,6 +83,21 @@ namespace UnigramAds.Core.Adapters
             }
         }
 
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            NativeEventBus.Unsubscribe(AdEventsTypes.Started, AdLoaded);
+            NativeEventBus.Unsubscribe(AdEventsTypes.Closed, AdClosed);
+            NativeEventBus.Unsubscribe(AdEventsTypes.Shown, AdShown);
+            NativeEventBus.Unsubscribe(AdEventsTypes.RewardClaimed, AdRewarded);
+
+            _isDisposed = true;
+        }
+
         private void ShowAdWithCallback(Action adShown = null)
         {
             if (!UnigramUtils.IsSupporedPlatform())
@@ -86,35 +116,59 @@ namespace UnigramAds.Core.Adapters
 
             if (adShown != null)
             {
-                OnShowFinished = adShown;
+                OnRewarded = adShown;
             }
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
                 AdSonarBridge.ShowRewardedAdByUnit(
-                    rewardAdUnit, OnAdShown, OnAdShowFailed);
+                    rewardAdUnit, AdRewarded, AdShowFailed);
             }
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
                 AdsGramBridge.ShowNativeAd(rewardAdUnit, 
-                    _unigramSDK.IsTestMode, OnAdShown, OnAdShowFailed);
+                    _unigramSDK.IsTestMode, AdShown, AdShowFailed);
             }
         }
 
-        private void OnAdShown()
+        private void AdRewarded()
         {
-            OnShowFinished?.Invoke();
+            OnRewarded?.Invoke();
 
-            UnigramAdsLogger.Log($"Reward ad successfully shown " +
+            UnigramAdsLogger.Log($"Rewarded ad successfully shown " +
                 $"by network {_unigramSDK.CurrentNetwork}");
         }
 
-        private void OnAdShowFailed(string errorMessage)
+        private void AdLoaded()
+        {
+            OnLoaded?.Invoke();
+
+            UnigramAdsLogger.Log($"Rewarded ad loaded " +
+                $"by network: {_currentNetwork}");
+        }
+
+        private void AdClosed()
+        {
+            OnClosed?.Invoke();
+
+            UnigramAdsLogger.Log($"Rewarded ad closed " +
+                $"by network: {_currentNetwork}");
+        }
+
+        private void AdShown()
+        {
+            OnShown?.Invoke();
+
+            UnigramAdsLogger.Log($"Rewarded ad shown " +
+                $"by network: {_currentNetwork}");
+        }
+
+        private void AdShowFailed(string errorMessage)
         {
             OnShowFailed?.Invoke(errorMessage);
 
-            UnigramAdsLogger.LogWarning("Failed to show rewarded ad by " +
+            UnigramAdsLogger.LogError("Failed to show rewarded ad by " +
                 $"network {_unigramSDK.CurrentNetwork}, reason: {errorMessage}");
         }
 
