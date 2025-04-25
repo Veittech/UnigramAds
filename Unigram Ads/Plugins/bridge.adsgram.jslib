@@ -52,7 +52,7 @@ const adsGramBridge = {
                 this.AdsGramController = window.Adsgram.init(
                 { 
                     blockId: parsedAdUnit,
-                    debug: isTestMode
+                    debug: !!isTestMode
                 });
 
                 console.log(`[Unigram Ads] Ad unit ${parsedAdUnit} `+
