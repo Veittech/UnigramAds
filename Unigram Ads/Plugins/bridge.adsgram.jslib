@@ -197,7 +197,7 @@ const adsGramBridge = {
                 EventId: adEventId
             });
 
-            console.log(`[Unigram Ads] AdsGram native event '${payloadEvent}' pushed at listener`);
+            console.log(`[Unigram Ads] Dispatched native AdsGram event '${payloadEvent}' to listener`);
 
             SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
         }

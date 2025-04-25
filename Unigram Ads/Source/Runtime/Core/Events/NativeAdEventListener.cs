@@ -14,6 +14,8 @@ namespace UnigramAds.Core.Events
         private void Awake()
         {
             CreateInstance();
+
+            UnigramAdsLogger.Log($"Native events listener created");
         }
 
         public void ReceiveEvent(string eventPayload)
