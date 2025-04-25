@@ -66,7 +66,7 @@ const adSonarBridge = {
                 EventId: adEventId
             });
 
-            console.log(`[Unigram Ads] AdSonar native event '${payloadEvent}' pushed at listener`);  
+            console.log(`[Unigram Ads] Dispatched native AdSonar event '${payloadEvent}' to listener`);  
 
             SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);  
         },
