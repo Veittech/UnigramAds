@@ -40,6 +40,8 @@ namespace UnigramAds.Demo
             _interstitialAd.OnLoadFailed -= InterstitialAdLoadFailed;
             _interstitialAd.OnShowFailed -= InterstitialAdShowFailed;
 
+            _interstitialAd.Dispose();
+
             if (_rewardAd == null)
             {
                 return;
@@ -51,6 +53,8 @@ namespace UnigramAds.Demo
             _rewardAd.OnRewarded -= RewardedAdReceivedReward;
             _rewardAd.OnLoadFailed -= RewardedAdLoadFailed;
             _rewardAd.OnShowFailed -= RewardedAdShowFailed;
+
+            _interstitialAd.Dispose();
         }
 
         private void Start()

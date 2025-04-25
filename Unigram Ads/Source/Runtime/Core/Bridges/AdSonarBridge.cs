@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
-using UnityEngine;
 using AOT;
+using UnityEngine;
 using UnigramAds.Utils;
 
 namespace UnigramAds.Core.Bridge
@@ -36,14 +36,14 @@ namespace UnigramAds.Core.Bridge
             {
                 OnInitialized?.Invoke(isSuccess);
 
-                Debug.Log("Ad Sonar sdk successfully initialized");
+                Debug.Log($"{UnigramAdsLogger.PREFIX} Sdk successfully initialized");
 
                 return;
             }
 
             OnInitialized?.Invoke(isSuccess);
 
-            Debug.LogError("Failed to initialize Ad Sonar sdk");
+            Debug.LogError($"{UnigramAdsLogger.PREFIX} Failed to initialize sdk");
         }
 
         [MonoPInvokeCallback(typeof(Action))]
@@ -51,7 +51,7 @@ namespace UnigramAds.Core.Bridge
         {
             OnAdShown?.Invoke();
 
-            Debug.Log("Ad sonar ad successfully shown");
+            UnigramAdsLogger.Log("Ad sonar ad successfully shown");
 
             OnAdShown = null;
         }
@@ -61,8 +61,8 @@ namespace UnigramAds.Core.Bridge
         {
             OnAdShowFailed?.Invoke(errorMessage);
 
-            Debug.LogWarning($"Failed to shown Ad Sonar " +
-                $"ad, reason: {errorMessage}");
+            UnigramAdsLogger.LogWarning($"Failed to shown " +
+                $"Ad Sonar ad, reason: {errorMessage}");
 
             OnAdShowFailed = null;
         }
@@ -72,7 +72,7 @@ namespace UnigramAds.Core.Bridge
         {
             OnAdUnitRemoved?.Invoke();
 
-            Debug.Log("Ad sonar ad unit removed");
+            UnigramAdsLogger.Log("Ad sonar ad unit removed");
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
@@ -80,7 +80,7 @@ namespace UnigramAds.Core.Bridge
         {
             OnAdUnitRemoveFailed?.Invoke(errorMessage);
 
-            Debug.LogWarning($"Failed to remove ad sonar " +
+            UnigramAdsLogger.LogWarning($"Failed to remove ad sonar " +
                 $"ad unit, reason: {errorMessage}");
         }
 #endregion
@@ -118,7 +118,7 @@ namespace UnigramAds.Core.Bridge
             ShowInterstitialAd(adUnit, OnAdShow, OnAdShowFail);
         }
 
-        internal static void RemoveAdUnit(string adUnit,
+        internal static void Destroy(string adUnit,
             Action adUnitRemoved, Action<string> adUnitRemoveFailed)
         {
             OnAdUnitRemoved = adUnitRemoved;

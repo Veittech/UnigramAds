@@ -2,6 +2,17 @@ const adsGramBridge = {
     $adsGram: {
         AdsGramController: null,
 
+        nativeEventTypes: [
+            "onStart",
+            "onSkip",
+            "onReward",
+            "onComplete",
+            "onError",
+            "onBannerNotFound",
+            "onNonStopShow",
+            "onTooLongSession"
+        ],
+
         parseAllocString: function(data)
         {
             let ptr;
@@ -65,11 +76,12 @@ const adsGramBridge = {
             }
         },
 
-        showNativeAd: function(adUnit, isTestMode, successCallback, errorCallback)
+        showNativeAd: function(adType, adUnit, 
+            isTestMode, successCallback, errorCallback)
         {
             if (!window.Adsgram)
             {
-                const reasonPtr = adsGram.parseAllocString("SDK_NOT_INITIALIZED");
+                const reasonPtr = this.parseAllocString("SDK_NOT_INITIALIZED");
 
                 dynCall('vi', errorCallback, [reasonPtr]);
 
@@ -78,7 +90,10 @@ const adsGramBridge = {
                 return;
             }
 
-            adsGram.initAdUnit(adUnit, isTestMode);
+            const parsedAdType = UTF8ToString(adType);
+
+            this.initAdUnit(adUnit, isTestMode);
+            this.massiveSubscribeToNativeEvents(parsedAdType);
 
             this.AdsGramController.show()
             .then((result) =>
@@ -88,21 +103,27 @@ const adsGramBridge = {
                     console.log(`[Unigram Ads] Finished show AdsGram `+
                         `native ad, result: ${JSON.stringify(result)}`);
 
+                    this.massiveUnSubscribeFromNativeEvents();
+
                     dynCall('v', successCallback);
 
                     return;
                 }
 
-                const errorPtr = adsGram.parseAllocString(result.description);
+                const errorPtr = this.parseAllocString(result.description);
+
+                this.massiveUnSubscribeFromNativeEvents();
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
-                -_free(errorPtr);
+                _free(errorPtr);
             })
             .catch((error) =>
             {
-                const reasonPtr = adsGram.parseAllocString(
+                const reasonPtr = this.parseAllocString(
                     error.description || 'UNKNOWN_ERROR');
+
+                this.massiveUnSubscribeFromNativeEvents();
 
                 console.error(`[Unigram Ads] Failed to show native ad, reason: ${error}`);
                 console.error(`[Unigram Ads] Show error reason: ${JSON.stringify(error, null, 4)}`);
@@ -125,36 +146,60 @@ const adsGramBridge = {
             this.AdsGramController.destroy();
         },
 
-        addListener: function(eventType, callback)
+        subscribeToNativeEvent: function(adType, eventId)
         {
-            if (this.isAvailableAdsGram())
+            if (!this.isAvailableAdsGram())
             {
-                const eventId = UTF8ToString(eventType);
-
-                this.AdsGramController.addEventListener(eventId, function ()
-                {
-                    console.log(`[Unigram Ads] Subscribed to native `+
-                        `ad event with id: ${eventId}`);
-
-                    dynCall('v', callback);
-                });
+                return;
             }
+
+            this.AdsGramController.addEventListener(eventId, function ()
+            {
+                adsGram.signEventHandler(adType, eventId);
+            });
         },
 
-        removeListener: function(eventType, callback)
+        unSubscribeFromNativeEvent: function(eventId)
         {
-            if (this.isAvailableAdsGram())
+            if (!this.isAvailableAdsGram())
             {
-                const eventId = UTF8ToString(eventType);
-
-                this.AdsGramController.removeEventListener(eventId, function ()
-                {
-                    console.log(`[Unigram Ads] Unsubscribed from native `+
-                        `ad event with id: ${eventId}`);
-
-                    dynCall('v', callback);
-                });
+                return;
             }
+
+            this.AdsGramController.removeEventListener(eventId, function ()
+            {
+                console.log(`[Unigram Ads] Successfully unsubscribed `+
+                    `from AdsGram native event: ${eventId}`);
+            });
+        },
+
+        massiveSubscribeToNativeEvents: function(adType)
+        {
+            this.nativeEventTypes.forEach((eventId) =>
+            {
+                this.subscribeToNativeEvent(adType, eventId);
+            });
+        },
+
+        massiveUnSubscribeFromNativeEvents: function()
+        {
+            this.nativeEventTypes.forEach((eventId) =>
+            {
+                this.unSubscribeFromNativeEvent(eventId);
+            });
+        },
+
+        signEventHandler: function(adType, adEventId)
+        {
+            const payloadEvent = JSON.stringify(
+            {
+                AdType: adType,
+                EventId: adEventId
+            });
+
+            console.log(`[Unigram Ads] AdsGram native event '${payloadEvent}' pushed at listener`);
+
+            SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
         }
     },
 
@@ -163,24 +208,16 @@ const adsGramBridge = {
         adsGram.initAdsGram(callback);
     },
 
-    ShowAd: function(adUnit, isTestMode, adShown, adShowFailed)
+    ShowAd: function(adType, adUnit, 
+        isTestMode, adShown, adShowFailed)
     {
-        adsGram.showNativeAd(adUnit, isTestMode, adShown, adShowFailed);
+        adsGram.showNativeAd(adType, adUnit, 
+            isTestMode, adShown, adShowFailed);
     },
 
     DestroyAd: function()
     {
         adsGram.destroyAd();
-    },
-
-    AddListener: function(eventType, callback)
-    {
-        adsGram.addListener(eventType, callback);
-    },
-
-    RemoveListener: function(eventType, callback)
-    {
-        adsGram.removeListener(eventType, callback);
     }
 };
 

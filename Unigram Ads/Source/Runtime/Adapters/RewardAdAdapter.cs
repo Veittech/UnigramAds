@@ -7,12 +7,11 @@ using UnigramAds.Utils;
 
 namespace UnigramAds.Core.Adapters
 {
-    public sealed class RewardAdAdapter : IRewardVideoAd, IDisposable
+    public sealed class RewardAdAdapter : IRewardVideoAd
     {
         private readonly UnigramAdsSDK _unigramSDK;
 
-        private readonly Dictionary<AdEventsTypes, Action> _adSonarCallbacks;
-        private readonly Dictionary<AdEventsTypes, Action> _adsGramCallbacks;
+        private readonly Dictionary<AdEventsTypes, Action> _callbacksMap;
 
         private AdNetworkTypes _currentNetwork => _unigramSDK.CurrentNetwork;
 
@@ -39,27 +38,18 @@ namespace UnigramAds.Core.Adapters
 
             _unigramSDK = UnigramAdsSDK.Instance;
 
-            _adSonarCallbacks = new()
-            {
-                { AdEventsTypes.Started, AdLoaded },
-                { AdEventsTypes.Closed, AdClosed },
-                { AdEventsTypes.Shown, AdShown },
-                { AdEventsTypes.RewardClaimed, AdRewarded },
-            };
-
-            _adsGramCallbacks = new()
+            _callbacksMap = new()
             {
                 { AdEventsTypes.Started, AdLoaded },
                 { AdEventsTypes.Skipped, AdClosed },
                 { AdEventsTypes.Completed, AdShown },
-                { AdEventsTypes.RewardClaimed, AdRewarded },
+                { AdEventsTypes.Rewarded, AdRewarded },
                 { AdEventsTypes.NotAvailable, AdLoadFailed },
                 { AdEventsTypes.TooLongSession, AdShowExpired },
                 { AdEventsTypes.TryNonStopWatch, AdNonStopWatch },
             };
 
-            SubscribeToAdsGramEvents();
-            SubscribeToAdSonarEvents();
+            NativeEventBus.Subscribe(NativeAdTypes.rewarded, _callbacksMap);
         }
 
         public void Show()
@@ -86,7 +76,7 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
-                AdsGramBridge.DestroyNativeAd();
+                AdsGramBridge.Destroy();
 
                 UnigramAdsLogger.Log($"Rewarded ad unit " +
                     $"{rewardAdUnit} from AdsGram removed!");
@@ -94,7 +84,7 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
-                AdSonarBridge.RemoveAdUnit(rewardAdUnit, () =>
+                AdSonarBridge.Destroy(rewardAdUnit, () =>
                 {
                     UnigramAdsLogger.Log($"Rewarded ad unit " +
                         $"{rewardAdUnit} from AdsSonar removed!");
@@ -114,9 +104,7 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            NativeEventBus.Unsubscribe(NativeAdTypes.rewarded, _adSonarCallbacks);
-
-            AdsGramBridge.UnSubscribe(_adsGramCallbacks);
+            NativeEventBus.Unsubscribe(NativeAdTypes.rewarded, _callbacksMap);
 
             _isDisposed = true;
         }
@@ -154,29 +142,13 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
-                AdsGramBridge.ShowNativeAd(rewardAdUnit, 
-                    _unigramSDK.IsTestMode, AdRewarded, AdShowFailed);
+                AdsGramBridge.Show(NativeAdTypes.rewarded,
+                    rewardAdUnit, _unigramSDK.IsTestMode, () =>
+                {
+                    adShown?.Invoke();
+                },
+                AdShowFailed);
             }
-        }
-
-        private void SubscribeToAdsGramEvents()
-        {
-            if (!_unigramSDK.IsAvailableAdsGram)
-            {
-                return;
-            }
-
-            AdsGramBridge.Subscribe(_adsGramCallbacks);
-        }
-
-        private void SubscribeToAdSonarEvents()
-        {
-            if (!_unigramSDK.IsAvailableAdSonar)
-            {
-                return;
-            }
-
-            NativeEventBus.Subscribe(NativeAdTypes.rewarded, _adSonarCallbacks);
         }
 
         private bool IsAvailableAdUnit()

@@ -9,7 +9,7 @@ namespace UnigramAds.Common
         Closed,
         Completed,
         Refreshed,
-        RewardClaimed,
+        Rewarded,
         WatchFailed,
         NotAvailable,
         TryNonStopWatch,

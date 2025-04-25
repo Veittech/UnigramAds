@@ -40,7 +40,7 @@ namespace UnigramAds.Common
                     targetId = AD_REFRESHED;
 
                     break;
-                case AdEventsTypes.RewardClaimed:
+                case AdEventsTypes.Rewarded:
                     targetId = AD_REWARD_CLAIMED;
 
                     break;
@@ -100,7 +100,7 @@ namespace UnigramAds.Common
 
                     break;
                 case AD_REWARD_CLAIMED:
-                    eventType = AdEventsTypes.RewardClaimed;
+                    eventType = AdEventsTypes.Rewarded;
 
                     break;
                 case AD_NOT_AVAILABLE:

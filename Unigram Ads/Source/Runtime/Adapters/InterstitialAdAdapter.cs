@@ -11,8 +11,7 @@ namespace UnigramAds.Core.Adapters
     {
         private readonly UnigramAdsSDK _unigramSDK;
 
-        private readonly Dictionary<AdEventsTypes, Action> _adSonarCallbacks;
-        private readonly Dictionary<AdEventsTypes, Action> _adsGramCallbacks;
+        private readonly Dictionary<AdEventsTypes, Action> _callbacksMap;
 
         private AdNetworkTypes _currentNetwork => _unigramSDK.CurrentNetwork;
 
@@ -38,14 +37,7 @@ namespace UnigramAds.Core.Adapters
 
             _unigramSDK = UnigramAdsSDK.Instance;
 
-            _adSonarCallbacks = new()
-            {
-                { AdEventsTypes.Started, AdLoaded },
-                { AdEventsTypes.Closed, AdClosed },
-                { AdEventsTypes.Shown, AdShown },
-            };
-
-            _adsGramCallbacks = new()
+            _callbacksMap = new()
             {
                 { AdEventsTypes.Started, AdLoaded },
                 { AdEventsTypes.Skipped, AdClosed },
@@ -55,9 +47,7 @@ namespace UnigramAds.Core.Adapters
                 { AdEventsTypes.TryNonStopWatch, AdNonStopWatch },
             };
 
-            NativeEventBus.Subscribe(NativeAdTypes.interstitial, _adSonarCallbacks);
-
-            AdsGramBridge.Subscribe(_adsGramCallbacks);
+            NativeEventBus.Subscribe(NativeAdTypes.interstitial, _callbacksMap);
         }
 
         public void Show()
@@ -79,7 +69,7 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
-                AdsGramBridge.DestroyNativeAd();
+                AdsGramBridge.Destroy();
 
                 UnigramAdsLogger.Log($"Interstitial ad unit " +
                     $"{interstitialAdUnit} from AdsGram removed!");
@@ -87,7 +77,7 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdSonar)
             {
-                AdSonarBridge.RemoveAdUnit(interstitialAdUnit, () =>
+                AdSonarBridge.Destroy(interstitialAdUnit, () =>
                 {
                     UnigramAdsLogger.Log($"Interstitial ad unit " +
                         $"{interstitialAdUnit} from AdsSonar removed!");
@@ -107,9 +97,7 @@ namespace UnigramAds.Core.Adapters
                 return;
             }
 
-            NativeEventBus.Unsubscribe(NativeAdTypes.interstitial, _adSonarCallbacks);
-
-            AdsGramBridge.UnSubscribe(_adsGramCallbacks);
+            NativeEventBus.Unsubscribe(NativeAdTypes.interstitial, _callbacksMap);
 
             _isDisposed = true;
         }
@@ -138,8 +126,8 @@ namespace UnigramAds.Core.Adapters
 
             if (_unigramSDK.IsAvailableAdsGram)
             {
-                AdsGramBridge.ShowNativeAd(interstitialAdUnit,
-                    _unigramSDK.IsTestMode, AdShown, AdShowFailed);
+                AdsGramBridge.Show(NativeAdTypes.interstitial,
+                    interstitialAdUnit, _unigramSDK.IsTestMode, () => { }, AdShowFailed);
             }
         }
 

@@ -2,6 +2,19 @@ const adSonarBridge = {
     $adSonar: {
         AdsSonarController: null,
 
+        nativeEventTypes: {
+            STARTED: "onStart",
+            SHOWN: "onShow",
+            REWARDED: "onReward",
+            SHOW_FAILED: "onError",
+            CLOSED: "onClose",
+        },
+
+        adTypes: {
+            REWARDED: "rewarded",
+            INTERSTITIAL: "interstitial"
+        },
+
         validateAllocString: function(data)
         {
             let ptr;
@@ -53,9 +66,9 @@ const adSonarBridge = {
                 EventId: adEventId
             });
 
-            SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
+            console.log(`[Unigram Ads] AdSonar native event '${payloadEvent}' pushed at listener`);  
 
-            console.log(`[Unigram Ads] AdSonar native event '${payloadEvent}' pushed at listener`);    
+            SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);  
         },
 
         showRewardedAd: function(adUnit, 
@@ -65,7 +78,7 @@ const adSonarBridge = {
             {
                 console.warn('[Unigram Ads] Ad Sonar sdk is not initialized');
 
-                const errorPtr = adSonar.validateAllocString("NOT_INITIALIZED");
+                const errorPtr = this.validateAllocString("NOT_INITIALIZED");
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
@@ -81,43 +94,43 @@ const adSonarBridge = {
             this.AdsSonarController.show({ adUnit: adPlacement, loader: true, 
                 onStart: () =>
                 {
-                    adEventId = "onStart";
+                    adEventId = this.nativeEventTypes.STARTED;
 
                     console.log('[Unigram Ads] Rewarded ad started loading');
 
-                    adSonar.sendAdStatusEvent("rewarded", adEventId);     
+                    this.sendAdStatusEvent(this.adTypes.REWARDED, adEventId);     
                 },
                 onShow: () =>
                 {
-                    adEventId = "onShow";
+                    adEventId = this.nativeEventTypes.SHOWN;
 
                     console.log('[Unigram Ads] Rewarded ad start showing');
 
-                    adSonar.sendAdStatusEvent("rewarded", adEventId);
+                    this.sendAdStatusEvent(this.adTypes.REWARDED, adEventId);
                 },
                 onReward: () =>
                 {
-                    adEventId = "onReward";
+                    adEventId = this.nativeEventTypes.REWARDED;
 
                     console.log('[Unigram Ads] Rewarded ad finished and reward claimed');
 
-                    adSonar.sendAdStatusEvent("rewarded", adEventId);
+                    this.sendAdStatusEvent(this.adTypes.REWARDED, adEventId);
                 },
                 onError: () =>
                 {
-                    adEventId = "onError";
+                    adEventId = this.nativeEventTypes.SHOW_FAILED;
 
                     console.warn('[Unigram Ads] Rewarded ad load/show failed');
 
-                    adSonar.sendAdStatusEvent("rewarded", adEventId);
+                    this.sendAdStatusEvent(this.adTypes.REWARDED, adEventId);
                 },
                 onClose: () =>
                 {
-                    adEventId = "onClose";
+                    adEventId = this.nativeEventTypes.CLOSED;
 
                     console.log('[Unigram Ads] Rewarded ad closed');
                     
-                    adSonar.sendAdStatusEvent("rewarded", adEventId);
+                    this.sendAdStatusEvent(this.adTypes.REWARDED, adEventId);
                 },
             }).then((result) =>
             {
@@ -128,7 +141,7 @@ const adSonarBridge = {
                     console.error(`[Unigram Ads] Failed to show rewarded ad, claimed status: `+
                         `${result.status}, reason: ${result.message}`);
                         
-                    const errorPtr = adSonar.validateAllocString(result.message);
+                    const errorPtr = this.validateAllocString(result.message);
 
                     dynCall('vi', errorCallback, [errorPtr]);
 
@@ -153,7 +166,7 @@ const adSonarBridge = {
             {
                 console.warn('[Unigram Ads] Ad Sonar sdk is not initialized');
 
-                const errorPtr = adSonar.validateAllocString("NOT_INITIALIZED");
+                const errorPtr = this.validateAllocString("NOT_INITIALIZED");
 
                 dynCall('vi', errorCallback, [errorPtr]);
 
@@ -169,35 +182,35 @@ const adSonarBridge = {
             this.AdsSonarController.show({ adUnit: adPlacement, loader: true, 
                 onStart: () =>
                 {
-                    adEventId = "onStart";
+                    adEventId = this.nativeEventTypes.STARTED;
 
                     console.log('[Unigram Ads] Interstitial ad started loading');
 
-                    adSonar.sendAdStatusEvent("interstitial", adEventId);
+                    this.sendAdStatusEvent(this.adTypes.INTERSTITIAL, adEventId);
                 },
                 onShow: () =>
                 {
-                    adEventId = "onShow";
+                    adEventId = this.nativeEventTypes.SHOWN;
 
                     console.log('[Unigram Ads] Interstitial ad start showing');
 
-                    adSonar.sendAdStatusEvent("interstitial", adEventId);
+                    this.sendAdStatusEvent(this.adTypes.INTERSTITIAL, adEventId);
                 },
                 onError: () =>
                 {
-                    adEventId = "onError";
+                    adEventId = this.nativeEventTypes.SHOW_FAILED;
 
                     console.warn('[Unigram Ads] Interstitial ad show failed');
 
-                    adSonar.sendAdStatusEvent("interstitial", adEventId);
+                    this.sendAdStatusEvent(this.adTypes.INTERSTITIAL, adEventId);
                 },
                 onClose: () =>
                 {
-                    adEventId = "onClose";
+                    adEventId = this.nativeEventTypes.CLOSED;
 
                     console.log('[Unigram Ads] Interstitial ad closed');
 
-                    adSonar.sendAdStatusEvent("interstitial", adEventId);
+                    this.sendAdStatusEvent(this.adTypes.INTERSTITIAL, adEventId);
                 },
             }).then((result) =>
             {
@@ -208,7 +221,7 @@ const adSonarBridge = {
                     console.error(`[Unigram Ads] Failed to show interstitial ad, `+
                         `claimed status: ${result.status}, reason: ${result.message}`);
                         
-                    const errorPtr = adSonar.validateAllocString(result.message);
+                    const errorPtr = this.validateAllocString(result.message);
 
                     dynCall('vi', errorCallback, [errorPtr]);
 
@@ -246,7 +259,7 @@ const adSonarBridge = {
                 {
                     console.error(`[Unigram Ads] Failed to remove ad unit, reasoN: ${result.message}`);
                         
-                    const errorPtr = adSonar.validateAllocString(result.message);
+                    const errorPtr = this.validateAllocString(result.message);
 
                     dynCall('vi', errorCallback, [errorPtr]);
 
