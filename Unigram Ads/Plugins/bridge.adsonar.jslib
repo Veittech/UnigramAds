@@ -47,13 +47,10 @@ const adSonarBridge = {
 
         sendAdStatusEvent: function(adType, adEventId)
         {
-            const parsedAdType = UTF8ToString(adType);
-            const parsedAdEventId = UTF8ToString(adEventId);
-
             let payloadEvent = JSON.stringify(
             {
-                AdType: parsedAdType,
-                EventId: parsedAdEventId
+                AdType: adEventId,
+                EventId: adEventId
             });
 
             SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
