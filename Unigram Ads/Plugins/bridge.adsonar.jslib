@@ -45,6 +45,22 @@ const adSonarBridge = {
             dynCall('vi', callback, [1]);
         },
 
+        sendAdStatusEvent: function(adType, adEventId)
+        {
+            const parsedAdType = UTF8ToString(adType);
+            const parsedAdEventId = UTF8ToString(adEventId);
+
+            let payloadEvent = JSON.stringify(
+            {
+                AdType: parsedAdType,
+                EventId: parsedAdEventId
+            });
+
+            SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
+
+            console.log(`[Unigram Ads] AdSonar native event '${payloadEvent}' pushed at listener`);    
+        },
+
         showRewardedAd: function(adUnit, 
             successCallback, errorCallback)
         {
@@ -64,91 +80,47 @@ const adSonarBridge = {
             const adPlacement = UTF8ToString(adUnit);
 
             let adEventId;
-            let payloadEvent;
 
             this.AdsSonarController.show({ adUnit: adPlacement, loader: true, 
                 onStart: () =>
                 {
                     adEventId = "onStart";
 
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "rewarded",
-                        EventId: adEventId
-                    });
-
                     console.log('[Unigram Ads] Rewarded ad started loading');
 
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
-
-                    _free(payloadEvent);
-                
+                    adSonar.sendAdStatusEvent("rewarded", adEventId);     
                 },
                 onShow: () =>
                 {
                     adEventId = "onShow";
-                                        
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "rewarded",
-                        EventId: adEventId
-                    });
 
                     console.log('[Unigram Ads] Rewarded ad start showing');
 
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
+                    adSonar.sendAdStatusEvent("rewarded", adEventId);
                 },
                 onReward: () =>
                 {
                     adEventId = "onReward";
 
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "rewarded",
-                        EventId: adEventId
-                    });
-
                     console.log('[Unigram Ads] Rewarded ad finished and reward claimed');
 
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
+                    adSonar.sendAdStatusEvent("rewarded", adEventId);
                 },
                 onError: () =>
                 {
                     adEventId = "onError";
 
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "rewarded",
-                        EventId: adEventId
-                    });
-
                     console.warn('[Unigram Ads] Rewarded ad load/show failed');
 
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
+                    adSonar.sendAdStatusEvent("rewarded", adEventId);
                 },
                 onClose: () =>
                 {
                     adEventId = "onClose";
 
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "rewarded",
-                        EventId: adEventId
-                    });
-
                     console.log('[Unigram Ads] Rewarded ad closed');
                     
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
+                    adSonar.sendAdStatusEvent("rewarded", adEventId);
                 },
             }).then((result) =>
             {
@@ -196,72 +168,39 @@ const adSonarBridge = {
             const adPlacement = UTF8ToString(adUnit);
 
             let adEventId;
-            let payloadEvent;
 
             this.AdsSonarController.show({ adUnit: adPlacement, loader: true, 
                 onStart: () =>
                 {
                     adEventId = "onStart";
 
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "interstitial",
-                        EventId: adEventId
-                    });
-
                     console.log('[Unigram Ads] Interstitial ad started loading');
 
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
+                    adSonar.sendAdStatusEvent("interstitial", adEventId);
                 },
                 onShow: () =>
                 {
                     adEventId = "onShow";
 
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "interstitial",
-                        EventId: adEventId
-                    });
-
                     console.log('[Unigram Ads] Interstitial ad start showing');
 
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
+                    adSonar.sendAdStatusEvent("interstitial", adEventId);
                 },
                 onError: () =>
                 {
                     adEventId = "onError";
 
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "interstitial",
-                        EventId: adEventId
-                    });
-
                     console.warn('[Unigram Ads] Interstitial ad show failed');
 
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
+                    adSonar.sendAdStatusEvent("interstitial", adEventId);
                 },
                 onClose: () =>
                 {
                     adEventId = "onClose";
 
-                    payloadEvent = JSON.stringify(
-                    {
-                        AdType: "interstitial",
-                        EventId: adEventId
-                    });
-
                     console.log('[Unigram Ads] Interstitial ad closed');
 
-                    SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
-
-                    console.log(`[Unigram Ads] Native event '${payloadEvent}' pushed at listener`);
+                    adSonar.sendAdStatusEvent("interstitial", adEventId);
                 },
             }).then((result) =>
             {
@@ -281,12 +220,12 @@ const adSonarBridge = {
                     return;
                 }
 
-                console.log(`[Unigram Ads] Interstitial Ad successfully shown`);
-
                 console.log(`[Unigram Ads] Finished show Ad Sonar `+
                     `interstitial ad by event id: ${adEventId}`);
 
                 dynCall('v', successCallback);
+                
+                console.log(`[Unigram Ads] Interstitial Ad successfully shown`);
 
                 return;
             });

@@ -11,7 +11,8 @@ namespace UnigramAds.Core.Adapters
     {
         private readonly UnigramAdsSDK _unigramSDK;
 
-        private readonly Dictionary<AdEventsTypes, Action> _callbacksMap;
+        private readonly Dictionary<AdEventsTypes, Action> _adSonarCallbacks;
+        private readonly Dictionary<AdEventsTypes, Action> _adsGramCallbacks;
 
         private AdNetworkTypes _currentNetwork => _unigramSDK.CurrentNetwork;
 
@@ -20,7 +21,10 @@ namespace UnigramAds.Core.Adapters
         public event Action OnLoaded;
         public event Action OnClosed;
         public event Action OnShown;
+        public event Action OnTryNonStopWatch;
 
+        public event Action OnLoadFailed;
+        public event Action OnShowExpired;
         public event Action<string> OnShowFailed;
 
         public InterstitialAdAdapter()
@@ -34,26 +38,26 @@ namespace UnigramAds.Core.Adapters
 
             _unigramSDK = UnigramAdsSDK.Instance;
 
-            _callbacksMap = new()
+            _adSonarCallbacks = new()
             {
                 { AdEventsTypes.Started, AdLoaded },
                 { AdEventsTypes.Closed, AdClosed },
                 { AdEventsTypes.Shown, AdShown },
             };
 
-            NativeEventBus.Subscribe(NativeAdTypes.interstitial, _callbacksMap);
-        }
-
-        public void Dispose()
-        {
-            if (_isDisposed)
+            _adsGramCallbacks = new()
             {
-                return;
-            }
+                { AdEventsTypes.Started, AdLoaded },
+                { AdEventsTypes.Skipped, AdClosed },
+                { AdEventsTypes.Completed, AdShown },
+                { AdEventsTypes.NotAvailable, AdLoadFailed },
+                { AdEventsTypes.TooLongSession, AdShowExpired },
+                { AdEventsTypes.TryNonStopWatch, AdNonStopWatch },
+            };
 
-            NativeEventBus.Unsubscribe(NativeAdTypes.interstitial, _callbacksMap);
+            NativeEventBus.Subscribe(NativeAdTypes.interstitial, _adSonarCallbacks);
 
-            _isDisposed = true;
+            AdsGramBridge.Subscribe(_adsGramCallbacks);
         }
 
         public void Show()
@@ -94,6 +98,20 @@ namespace UnigramAds.Core.Adapters
                         $"interstitial ad unit {interstitialAdUnit} from AdsSonar");
                 });
             }
+        }
+
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            NativeEventBus.Unsubscribe(NativeAdTypes.interstitial, _adSonarCallbacks);
+
+            AdsGramBridge.UnSubscribe(_adsGramCallbacks);
+
+            _isDisposed = true;
         }
 
         private void ShowAdWithCallback()
@@ -154,12 +172,38 @@ namespace UnigramAds.Core.Adapters
                 $"shown by network: {_currentNetwork}");
         }
 
+        private void AdLoadFailed()
+        {
+            OnLoadFailed?.Invoke();
+
+            UnigramAdsLogger.LogWarning($"Failed to load " +
+                $"interstitial ad by network {_currentNetwork}");
+        }
+
         private void AdShowFailed(string errorMessage)
         {
             OnShowFailed?.Invoke(errorMessage);
 
-            UnigramAdsLogger.LogWarning("Failed to show rewarded ad " +
+            UnigramAdsLogger.LogWarning("Failed to show interstitial ad " +
                 $"by network {_currentNetwork}, reason: {errorMessage}");
+        }
+
+        private void AdNonStopWatch()
+        {
+            OnTryNonStopWatch?.Invoke();
+
+            UnigramAdsLogger.LogWarning($"Failed to show interstitial ad " +
+                $"by network {_currentNetwork}, reason: " +
+                $"try non stop watch before load new ad...");
+        }
+
+        private void AdShowExpired()
+        {
+            OnShowExpired?.Invoke();
+
+            UnigramAdsLogger.LogError($"Failed to show interstitial ad " +
+                $"by network {_currentNetwork}, reason: available ad amount " +
+                $"per user expired, please restart app or try again later...");
         }
     }
 }

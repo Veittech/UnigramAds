@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using AOT;
@@ -14,19 +15,19 @@ namespace UnigramAds.Core.Bridge
         private static extern void InitAdsGram(Action<int> sdkInitialized);
 
         [DllImport("__Internal")]
-        private static extern void ShowAd(string adUnit, bool isTestMode, Action adShown,
-            Action<string> showAdFailed);
+        private static extern void ShowAd(string adUnit,
+            bool isTestMode, Action adShown, Action<string> showAdFailed);
 
         [DllImport("__Internal")]
         private static extern void DestroyAd();
 
         [DllImport("__Internal")]
-        private static extern void AddListener(string eventId,
-            Action<string> actionSubsribed);
+        private static extern void AddListener(
+            string eventId, Action actionSubsribed);
 
         [DllImport("__Internal")]
-        private static extern void RemoveListener(string eventId, 
-            Action<string> actionUnsubsribed);
+        private static extern void RemoveListener(
+            string eventId, Action actionUnsubsribed);
 #endregion
 
 #region NATIVE_EVENTS
@@ -65,20 +66,16 @@ namespace UnigramAds.Core.Bridge
             OnRewardAdShowFailed?.Invoke(errorMessage);
         }
 
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void OnEventListenerInvoke(string eventId)
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void OnEventListenerInvoke()
         {
-            Debug.Log($"Invoked action by event: {eventId}");
-
-            OnEventListenerInvoked?.Invoke(AdEvents.GetEventById(eventId));
+            OnEventListenerInvoked?.Invoke();
         }
 
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void OnEventListenerRemove(string eventId)
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void OnEventListenerRemove()
         {
-            Debug.Log($"Action unsubscribed by event: {eventId}");
-
-            OnEventListenerRemoved?.Invoke(AdEvents.GetEventById(eventId));
+            OnEventListenerRemoved?.Invoke();
         }
         #endregion
 
@@ -87,25 +84,45 @@ namespace UnigramAds.Core.Bridge
         private static event Action OnRewardAdShown;
         private static event Action<string> OnRewardAdShowFailed;
 
-        private static event Action<AdEventsTypes> OnEventListenerInvoked;
-        private static event Action<AdEventsTypes> OnEventListenerRemoved;
+        private static event Action OnEventListenerInvoked;
+        private static event Action OnEventListenerRemoved;
 
-        internal static void SubscribeToEvent(AdEventsTypes eventType, 
-            Action<AdEventsTypes> eventInvoked)
+        internal static void Subscribe(
+            AdEventsTypes eventType, Action eventInvoked)
         {
+            var eventId = AdEvents.GetEventByType(eventType);
+
             OnEventListenerInvoked = eventInvoked;
 
-            AddListener(AdEvents.GetEventByType(
-                eventType), OnEventListenerInvoke);
+            AddListener(eventId, OnEventListenerInvoke);
         }
 
-        internal static void UnSubscribeFromEvent(AdEventsTypes eventType,
-            Action<AdEventsTypes> eventUnsubscribed)
+        internal static void Subscribe(
+            Dictionary<AdEventsTypes, Action> eventsMap)
         {
+            foreach (var map in eventsMap)
+            {
+                Subscribe(map.Key, map.Value);
+            }
+        }
+
+        internal static void UnSubscribe(
+            AdEventsTypes eventType, Action eventUnsubscribed)
+        {
+            var eventId = AdEvents.GetEventByType(eventType);
+
             OnEventListenerRemoved = eventUnsubscribed;
 
-            RemoveListener(AdEvents.GetEventByType(
-                eventType), OnEventListenerRemove);
+            RemoveListener(eventId, OnEventListenerRemove);
+        }
+
+        internal static void UnSubscribe(
+            Dictionary<AdEventsTypes, Action> eventsMap)
+        {
+            foreach (var map in eventsMap)
+            {
+                UnSubscribe(map.Key, map.Value);
+            }
         }
 
         internal static void Init(Action<bool> sdkInitialized)
@@ -115,7 +132,7 @@ namespace UnigramAds.Core.Bridge
             InitAdsGram(OnInitialize);
         }
 
-        internal static void ShowNativeAd(string adUnitId, bool isTestMode, 
+        internal static void ShowNativeAd(string adUnitId, bool isTestMode,
             Action adShown, Action<string> adShowFailed)
         {
             OnRewardAdShown = adShown;

@@ -1,4 +1,3 @@
-using System;
 using UnigramAds.Core.Events;
 
 namespace UnigramAds.Core.Adapters
