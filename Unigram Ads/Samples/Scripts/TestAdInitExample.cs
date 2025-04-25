@@ -20,6 +20,8 @@ namespace UnigramAds.Demo
 
         private readonly string AD_SONAR_INTER = "interstitial_placement";
         private readonly string AD_SONAR_REWARD = "rewarded_placement";
+        private readonly string ADS_GRAM_INTER = "int-7235";
+        private readonly string ADS_GRAM_REWARD = "7364";
 
         private readonly int REWARD_AMOUNT = 15;
         private readonly string FAKE_BALANCE_SAVE_KEY = UnigramUtils.FAKE_BALANCE_SAVE_KEY;
@@ -73,9 +75,9 @@ namespace UnigramAds.Demo
             }
 
             var unigramInstance = new UnigramAdsSDK.Builder(
-                AD_SONAR_INTER, AD_SONAR_REWARD)
+                ADS_GRAM_INTER, ADS_GRAM_REWARD)
                 .WithTestMode()
-                .WithAdNetwork(AdNetworkTypes.AdSonar)
+                .WithAdNetwork(AdNetworkTypes.AdsGram)
                 .Build(OnInitialized);
         }
 
