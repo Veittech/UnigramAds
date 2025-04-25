@@ -49,7 +49,7 @@ const adSonarBridge = {
         {
             let payloadEvent = JSON.stringify(
             {
-                AdType: adEventId,
+                AdType: adType,
                 EventId: adEventId
             });
 
