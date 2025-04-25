@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.InteropServices;
-using UnityEngine;
 using AOT;
-using UnigramAds.Common;
+using UnityEngine;
 using UnigramAds.Utils;
+using UnigramAds.Common;
 
 namespace UnigramAds.Core.Bridge
 {
@@ -14,19 +14,11 @@ namespace UnigramAds.Core.Bridge
         private static extern void InitAdsGram(Action<int> sdkInitialized);
 
         [DllImport("__Internal")]
-        private static extern void ShowAd(string adUnit, Action adShown,
-            Action<string> showAdFailed);
+        private static extern void ShowAd(string adType, string adUnit,
+            bool isTestMode, Action adShown, Action<string> showAdFailed);
 
         [DllImport("__Internal")]
         private static extern void DestroyAd();
-
-        [DllImport("__Internal")]
-        private static extern void AddListener(string eventId,
-            Action<string> actionSubsribed);
-
-        [DllImport("__Internal")]
-        private static extern void RemoveListener(string eventId, 
-            Action<string> actionUnsubsribed);
 #endregion
 
 #region NATIVE_EVENTS
@@ -39,20 +31,20 @@ namespace UnigramAds.Core.Bridge
             {
                 OnInitialized?.Invoke(isSuccess);
 
-                Debug.Log("Sdk successfully initialized");
+                Debug.Log($"{UnigramAdsLogger.PREFIX} Sdk successfully initialized");
 
                 return;
             }
 
-            Debug.LogError("Failed to initialize sdk");
-
             OnInitialized?.Invoke(isSuccess);
+
+            Debug.LogError($"{UnigramAdsLogger.PREFIX} Failed to initialize sdk");
         }
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void OnRewardAdShow()
         {
-            Debug.Log("Reward ad successfully shown");
+            UnigramAdsLogger.Log("Reward ad successfully shown");
 
             OnRewardAdShown?.Invoke();
         }
@@ -60,53 +52,18 @@ namespace UnigramAds.Core.Bridge
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void OnRewardAdShowFail(string errorMessage)
         {
-            Debug.LogWarning($"Failed to show reward ad, reason: {errorMessage}");
+            UnigramAdsLogger.LogWarning($"Failed to show " +
+                $"reward ad, reason: {errorMessage}");
 
             OnRewardAdShowFailed?.Invoke(errorMessage);
         }
 
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void OnEventListenerInvoke(string eventId)
-        {
-            Debug.Log($"Invoked action by event: {eventId}");
-
-            OnEventListenerInvoked?.Invoke(AdEvents.GetEventById(eventId));
-        }
-
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void OnEventListenerRemove(string eventId)
-        {
-            Debug.Log($"Action unsubscribed by event: {eventId}");
-
-            OnEventListenerRemoved?.Invoke(AdEvents.GetEventById(eventId));
-        }
         #endregion
 
         private static event Action<bool> OnInitialized;
 
         private static event Action OnRewardAdShown;
         private static event Action<string> OnRewardAdShowFailed;
-
-        private static event Action<AdEventsTypes> OnEventListenerInvoked;
-        private static event Action<AdEventsTypes> OnEventListenerRemoved;
-
-        internal static void SubscribeToEvent(AdEventsTypes eventType, 
-            Action<AdEventsTypes> eventInvoked)
-        {
-            OnEventListenerInvoked = eventInvoked;
-
-            AddListener(AdEvents.GetEventByType(
-                eventType), OnEventListenerInvoke);
-        }
-
-        internal static void UnSubscribeFromEvent(AdEventsTypes eventType,
-            Action<AdEventsTypes> eventUnsubscribed)
-        {
-            OnEventListenerRemoved = eventUnsubscribed;
-
-            RemoveListener(AdEvents.GetEventByType(
-                eventType), OnEventListenerRemove);
-        }
 
         internal static void Init(Action<bool> sdkInitialized)
         {
@@ -115,16 +72,17 @@ namespace UnigramAds.Core.Bridge
             InitAdsGram(OnInitialize);
         }
 
-        internal static void ShowNativeAd(string adUnitId, 
-            Action adShown, Action<string> adShowFailed)
+        internal static void Show(NativeAdTypes adType, string adUnitId, 
+            bool isTestMode, Action adShown, Action<string> adShowFailed)
         {
             OnRewardAdShown = adShown;
             OnRewardAdShowFailed = adShowFailed;
 
-            ShowAd(adUnitId, OnRewardAdShow, OnRewardAdShowFail);
+            ShowAd(adType.ToString(), adUnitId, 
+                isTestMode, OnRewardAdShow, OnRewardAdShowFail);
         }
 
-        internal static void DestroyNativeAd()
+        internal static void Destroy()
         {
             DestroyAd();
         }

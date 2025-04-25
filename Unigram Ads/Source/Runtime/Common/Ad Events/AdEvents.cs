@@ -4,10 +4,15 @@ namespace UnigramAds.Common
     {
         public const string AD_STARTED = "onStart";
         public const string AD_SKIPPED = "onSkip";
+        public const string AD_CLOSED = "onClose";
         public const string AD_REWARD_CLAIMED = "onReward";
+        public const string AD_COMPLETE = "onComplete";
+        public const string AD_SHOWN = "onShow";
         public const string AD_WATCH_FAILED = "onError";
+        public const string AD_REFRESHED = "onRefresh";
         public const string AD_NOT_AVAILABLE = "onBannerNotFound";
         public const string AD_NON_STOP_SHOWN = "onNonStopShow";
+        public const string AD_TOO_LONG_SESSION_ERROR = "onTooLongSession";
 
         internal static string GetEventByType(AdEventsTypes type)
         {
@@ -23,8 +28,24 @@ namespace UnigramAds.Common
                     targetId = AD_SKIPPED;
 
                     break;
-                case AdEventsTypes.RewardClaimed:
+                case AdEventsTypes.Closed:
+                    targetId = AD_CLOSED;
+
+                    break;
+                case AdEventsTypes.Shown:
+                    targetId = AD_SHOWN;
+
+                    break;
+                case AdEventsTypes.Refreshed:
+                    targetId = AD_REFRESHED;
+
+                    break;
+                case AdEventsTypes.Rewarded:
                     targetId = AD_REWARD_CLAIMED;
+
+                    break;
+                case AdEventsTypes.Completed:
+                    targetId = AD_COMPLETE;
 
                     break;
                 case AdEventsTypes.WatchFailed:
@@ -37,6 +58,10 @@ namespace UnigramAds.Common
                     break;
                 case AdEventsTypes.TryNonStopWatch:
                     targetId = AD_NON_STOP_SHOWN;
+
+                    break;
+                case AdEventsTypes.TooLongSession:
+                    targetId = AD_TOO_LONG_SESSION_ERROR;
 
                     break;
             }
@@ -58,8 +83,24 @@ namespace UnigramAds.Common
                     eventType = AdEventsTypes.Skipped;
 
                     break;
+                case AD_COMPLETE:
+                    eventType = AdEventsTypes.Completed;
+
+                    break;
+                case AD_CLOSED:
+                    eventType = AdEventsTypes.Closed;
+
+                    break;
+                case AD_SHOWN:
+                    eventType = AdEventsTypes.Shown;
+
+                    break;
+                case AD_REFRESHED:
+                    eventType = AdEventsTypes.Refreshed;
+
+                    break;
                 case AD_REWARD_CLAIMED:
-                    eventType = AdEventsTypes.RewardClaimed;
+                    eventType = AdEventsTypes.Rewarded;
 
                     break;
                 case AD_NOT_AVAILABLE:
@@ -68,6 +109,10 @@ namespace UnigramAds.Common
                     break;
                 case AD_NON_STOP_SHOWN:
                     eventType = AdEventsTypes.NotAvailable;
+
+                    break;
+                case AD_TOO_LONG_SESSION_ERROR:
+                    eventType = AdEventsTypes.TooLongSession;
 
                     break;
             }
