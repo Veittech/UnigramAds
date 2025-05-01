@@ -26,6 +26,21 @@ You can test the SDK without installation on a demo app [in the TMA (Telegram Mi
 
 <sub>✔️ Supported</sub> &nbsp; <sub>❌ Not Supported</sub> &nbsp; <sub>⚠️ In progress</sub>
 
+# Supported Ad Events & Ad Networks
+
+|        Ad Events       |   AdsGram   |   AdSonar   |
+| ---------------------- | :---------: | :---------: |
+| **OnLoaded**           | ✔️          | ✔️          |
+| **OnClosed**           | ✔️          | ✔️          |
+| **OnShown**            | ✔️          | ✔️          |
+| **OnRewarded**         | ✔️          | ✔️          |
+| **OnLoadFailed**       | ✔️          | ❌          |
+| **OnShowFailed**       | ✔️          | ✔️          |
+| **OnShowExpired**      | ✔️          | ❌          |
+| **OnTryNonStopWatch**  | ✔️          | ❌          |
+
+<sub>✔️ Supported</sub> &nbsp; <sub>❌ Not Supported</sub>
+
 # Installation
 
 **[Download the latest version of the SDK via the .unityPackage file here](https://github.com/Veittech/UnigramAds/releases)**
