@@ -188,10 +188,12 @@ public void InterstitialAdShowFailed(string error)
 ```
 
 The same implementation of result subscription is suitable for `reward ad`, so there's no point in duplicating it here.
-P.S: **STARTING FROM VERSION 1.0.4**, a special native `OnRewarded` event has been added for ads with rewards, which guarantees **full view** of the ad until the end.
+
+**STARTING FROM VERSION 1.0.4**, a special native `OnRewarded` event has been added for ads with rewards, which guarantees **full view** of the ad until the end.
 
 And also added `additional events`, through which you can find out the **current status** of displaying ads.
-**IMPORTANT:** some events are related to a **specific ad network** and cannot be triggered by using another one (to learn how events are related to ad networks, open (the corresponding section)[https://github.com/Veittech/UnigramAds/blob/master/README.md#supported-ad-events--ad-networks]).
+
+**IMPORTANT:** some events are related to a **specific ad network** and cannot be triggered by using another one (to learn how events are related to ad networks, open [the corresponding section](https://github.com/Veittech/UnigramAds/blob/master/README.md#supported-ad-events--ad-networks)).
 
 ```c#
 IVideoAd interstitialAd = new InterstitialAdAdapter();
@@ -207,6 +209,7 @@ interstitialAd.OnShowExpired += InterstitialAdShowExpired;
 
 I don't know how up-to-date this implementation is, but it appears from the ad networks documentation that they `free memory` from an ad unit that is no longer planned to be used.
 So you can free memory from a previously used ad unit `in an ad display`.
+
 **STARTING FROM VERSION 1.0.2**, the method itself reads the active ad network and accesses the JS bridge to `call the appropriate logic` in the library.
 
 ```c#
