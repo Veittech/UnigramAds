@@ -84,6 +84,8 @@ The `.WithAdNetwork` method specifies the ad network that is required to initial
 
 The `.WithTestMode()` method only adjusts the status of showing messages for debug from the SDK. Due to peculiarities of test mode initialization of one of the networks, this functionality does not work properly yet.
 
+Starting with **version 1.0.4** the `.WithTestMode()` call automatically activates the test display mode for the `AdsGram` ad network (if you use it during initialization)
+
 In case you want to initialize **ONLY ONE TYPE** of advertisement to display in your application, you can use the following SDK constructor:
 
 ```c#
@@ -170,7 +172,7 @@ public void CreateInterstitial()
 {
     IVideoAd interstitialAd = new InterstitialAdAdapter();
 
-    interstitialAd.OnShowFinished += InterstitialAdShown;
+    interstitialAd.OnShown += InterstitialAdShown;
     interstitialAd.OnShowFailed += InterstitialAdShowFailed;
 }
 
@@ -187,10 +189,29 @@ public void InterstitialAdShowFailed(string error)
 
 The same implementation of result subscription is suitable for `reward ad`, so there's no point in duplicating it here.
 
+**STARTING FROM VERSION 1.0.4**, a special native `OnRewarded` event has been added for ads with rewards, which guarantees **full view** of the ad until the end.
+
+And also added `additional events`, through which you can find out the **current status** of displaying ads.
+
+**IMPORTANT:** some events are related to a **specific ad network** and cannot be triggered by using another one (to learn how events are related to ad networks, open [the target section](https://github.com/Veittech/UnigramAds/blob/master/README.md#supported-ad-events--ad-networks)).
+
+```c#
+IVideoAd interstitialAd = new InterstitialAdAdapter();
+
+interstitialAd.OnLoaded += InterstitialAdLoaded;
+interstitialAd.OnClosed += InterstitialAdClosed;
+interstitialAd.OnTryNonStopWatch += InterstitialAdNonStopSpammed;
+interstitialAd.OnLoadFailed += InterstitialAdLoadFailed;
+interstitialAd.OnShowExpired += InterstitialAdShowExpired;
+```
+
+**P.S:** these events are also relevant for **reward ads**, so you can safely use them in both cases.
+
 ## Ad Destroy
 
 I don't know how up-to-date this implementation is, but it appears from the ad networks documentation that they `free memory` from an ad unit that is no longer planned to be used.
 So you can free memory from a previously used ad unit `in an ad display`.
+
 **STARTING FROM VERSION 1.0.2**, the method itself reads the active ad network and accesses the JS bridge to `call the appropriate logic` in the library.
 
 ```c#
