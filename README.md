@@ -191,7 +191,7 @@ The same implementation of result subscription is suitable for `reward ad`, so t
 P.S: **STARTING FROM VERSION 1.0.4**, a special native `OnRewarded` event has been added for ads with rewards, which guarantees **full view** of the ad until the end.
 
 And also added `additional events`, through which you can find out the **current status** of displaying ads.
-**IMPORTANT:** some events are related to a **specific ad network** and cannot be triggered by using another one (to learn how events are related to ad networks, open the corresponding section).
+**IMPORTANT:** some events are related to a **specific ad network** and cannot be triggered by using another one (to learn how events are related to ad networks, open (the corresponding section)[https://github.com/Veittech/UnigramAds/blob/master/README.md#supported-ad-events--ad-networks]).
 
 ```c#
 IVideoAd interstitialAd = new InterstitialAdAdapter();
