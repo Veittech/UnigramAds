@@ -193,14 +193,14 @@ The same implementation of result subscription is suitable for `reward ad`, so t
 
 And also added `additional events`, through which you can find out the **current status** of displaying ads.
 
-**IMPORTANT:** some events are related to a **specific ad network** and cannot be triggered by using another one (to learn how events are related to ad networks, open [the corresponding section](https://github.com/Veittech/UnigramAds/blob/master/README.md#supported-ad-events--ad-networks)).
+**IMPORTANT:** some events are related to a **specific ad network** and cannot be triggered by using another one (to learn how events are related to ad networks, open [the target section](https://github.com/Veittech/UnigramAds/blob/master/README.md#supported-ad-events--ad-networks)).
 
 ```c#
 IVideoAd interstitialAd = new InterstitialAdAdapter();
 
 interstitialAd.OnLoaded += InterstitialAdLoaded;
 interstitialAd.OnClosed += InterstitialAdClosed;
-interstitialAd.OnTryNonStopWatch += InterstitialNonStopSpammed;
+interstitialAd.OnTryNonStopWatch += InterstitialAdNonStopSpammed;
 interstitialAd.OnLoadFailed += InterstitialAdLoadFailed;
 interstitialAd.OnShowExpired += InterstitialAdShowExpired;
 ```
