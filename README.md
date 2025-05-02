@@ -205,6 +205,8 @@ interstitialAd.OnLoadFailed += InterstitialAdLoadFailed;
 interstitialAd.OnShowExpired += InterstitialAdShowExpired;
 ```
 
+**P.S:** these events are also relevant for **reward ads**, so you can safely use them in both cases.
+
 ## Ad Destroy
 
 I don't know how up-to-date this implementation is, but it appears from the ad networks documentation that they `free memory` from an ad unit that is no longer planned to be used.
