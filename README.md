@@ -25,6 +25,7 @@ You can test the SDK without installation on a demo app [in the TMA (Telegram Mi
 | **AdSonar**              | ✔️           | ✔️           | ⚠️           |
 | **Monetag**              | ⚠️           | ⚠️           | ❌           |
 | **TADS**                 | ❌           | ⚠️           | ❌           |
+| **Ton Ads**              | ❌           | ⚠️           | ❌           |
 
 <sub>✔️ Supported</sub> &nbsp; <sub>❌ Not Supported</sub> &nbsp; <sub>⚠️ In progress</sub>
 
