@@ -11,7 +11,7 @@
  <img width="600px" src="https://github.com/Veittech/UnigramAds/blob/master/Assets/sdkBackgroundLogo.png" alt="qr"/>
 </p>
 
-**UNIGRAM ADS** is a user-friendly solution for displaying native ads in web applications created on Unity in the format of Telegram Mini Apps.
+**UNIGRAM ADS** is a user-friendly solution for displaying native ads in Telegram Mini Apps built on Unity.
 
 # Technical Demo
 
@@ -25,13 +25,16 @@ You can test the SDK without installation on a demo app [in the TMA (Telegram Mi
 | **AdSonar**              | ✔️           | ✔️           | ⚠️           |
 | **Monetag**              | ⚠️           | ⚠️           | ❌           |
 | **TADS**                 | ❌           | ⚠️           | ❌           |
+| **TonAds**               | ❌           | ⚠️           | ❌           |
+| **OnClicka**             | ⚠️           | ⚠️           | ⚠️           |
+| **RichAds**              | ⚠️           | ⚠️           | ❌           |
 
 <sub>✔️ Supported</sub> &nbsp; <sub>❌ Not Supported</sub> &nbsp; <sub>⚠️ In progress</sub>
 
 # Supported Ad Events & Ad Networks
 
-|        Ad Events       |   AdsGram   |   AdSonar   |
-| ---------------------- | :---------: | :---------: |
+|        Ad Events       |   AdsGram   |   AdSonar    |
+| ---------------------- | :---------: | :----------: |
 | **OnLoaded**           | ✔️          | ✔️          |
 | **OnClosed**           | ✔️          | ✔️          |
 | **OnShown**            | ✔️          | ✔️          |
