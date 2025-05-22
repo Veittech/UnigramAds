@@ -11,7 +11,7 @@
  <img width="600px" src="https://github.com/Veittech/UnigramAds/blob/master/Assets/sdkBackgroundLogo.png" alt="qr"/>
 </p>
 
-**UNIGRAM ADS** is a user-friendly solution for displaying native ads in web applications created on Unity in the format of Telegram Mini Apps.
+**UNIGRAM ADS** is a user-friendly solution for displaying native ads in Telegram Mini Apps built on Unity.
 
 # Technical Demo
 
