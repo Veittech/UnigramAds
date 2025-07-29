@@ -21,8 +21,6 @@ const adSonarBridge = {
 
             if (typeof allocate === 'undefined')
             {
-                console.log(`[Unigram Ads] Detected Unity version 2023+`);
-
                 const length = lengthBytesUTF8(data) + 1;
 
                 ptr = _malloc(length);
@@ -33,6 +31,32 @@ const adSonarBridge = {
             }
 
             return allocate(intArrayFromString(data), 'i8', ALLOC_NORMAL);
+        },
+
+        sendSonarDataToUnity: function(callId, callback, dataPtr)
+        {
+            if (typeof wasmTable !== 'undefined')
+            {
+                wasmTable.get(callback).apply(null, dataPtr);
+
+                return;
+            }
+
+            if (typeof dynCall !== 'undefined')
+            {
+                dynCall(callId, callback, dataPtr);
+            }
+            else
+            {
+                return;
+            }
+
+            if (callId === 'v')
+            {
+                return;
+            }
+
+            _free(dataPtr);
         },
 
         isAvailableAdsSonar: function()
@@ -48,14 +72,14 @@ const adSonarBridge = {
             {
                 console.warn(`[Unigram Ads] Failed to initialize Ad Sonar bridge`);
 
-                dynCall('vi', callback, [0]);
+                this.sendSonarDataToUnity('vi', callback, [0]);
 
                 return;
             }
 
             console.log(`[Unigram Ads] Ads Sonar bridge initialized`);
 
-            dynCall('vi', callback, [1]);
+            this.sendSonarDataToUnity('vi', callback, [1]);
         },
 
         sendAdStatusEvent: function(adType, adEventId)
@@ -66,7 +90,8 @@ const adSonarBridge = {
                 EventId: adEventId
             });
 
-            console.log(`[Unigram Ads] Dispatched native AdSonar event '${payloadEvent}' to listener`);  
+            console.log(`[Unigram Ads] Dispatched native AdSonar `+
+                `event '${payloadEvent}' to listener`);  
 
             SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);  
         },
@@ -80,9 +105,7 @@ const adSonarBridge = {
 
                 const errorPtr = this.validateAllocString("NOT_INITIALIZED");
 
-                dynCall('vi', errorCallback, [errorPtr]);
-
-                _free(errorPtr);
+                this.sendSonarDataToUnity('vi', errorCallback, [errorPtr]);
 
                 return;
             }
@@ -138,14 +161,12 @@ const adSonarBridge = {
 
                 if (result.status === 'error')
                 {
-                    console.error(`[Unigram Ads] Failed to show rewarded ad, claimed status: `+
-                        `${result.status}, reason: ${result.message}`);
+                    console.error(`[Unigram Ads] Failed to show rewarded ad, `+
+                        `claimed status: ${result.status}, reason: ${result.message}`);
                         
                     const errorPtr = this.validateAllocString(result.message);
 
-                    dynCall('vi', errorCallback, [errorPtr]);
-
-                    _free(errorPtr);
+                    this.sendSonarDataToUnity('vi', errorCallback, [errorPtr]);
 
                     return;
                 }
@@ -153,7 +174,7 @@ const adSonarBridge = {
                 console.log(`[Unigram Ads] Finished show Ad Sonar `+
                     `rewarded ad by event id: ${adEventId}`);
 
-                dynCall('v', successCallback);
+                this.sendSonarDataToUnity('v', successCallback);
 
                 console.log(`[Unigram Ads] Rewarded Ad successfully shown`);
             });
@@ -168,9 +189,7 @@ const adSonarBridge = {
 
                 const errorPtr = this.validateAllocString("NOT_INITIALIZED");
 
-                dynCall('vi', errorCallback, [errorPtr]);
-
-                _free(errorPtr);
+                this.sendSonarDataToUnity('vi', errorCallback, [errorPtr]);
 
                 return;
             }
@@ -223,9 +242,7 @@ const adSonarBridge = {
                         
                     const errorPtr = this.validateAllocString(result.message);
 
-                    dynCall('vi', errorCallback, [errorPtr]);
-
-                    _free(errorPtr);
+                    this.sendSonarDataToUnity('vi', errorCallback, [errorPtr]);
 
                     return;
                 }
@@ -233,8 +250,8 @@ const adSonarBridge = {
                 console.log(`[Unigram Ads] Finished show Ad Sonar `+
                     `interstitial ad by event id: ${adEventId}`);
 
-                dynCall('v', successCallback);
-                
+                this.sendSonarDataToUnity('v', successCallback);
+
                 console.log(`[Unigram Ads] Interstitial Ad successfully shown`);
 
                 return;
@@ -257,18 +274,18 @@ const adSonarBridge = {
             {   
                 if (result.status === 'error')
                 {
-                    console.error(`[Unigram Ads] Failed to remove ad unit, reasoN: ${result.message}`);
+                    console.error(`[Unigram Ads] Failed to remove `+
+                        `ad unit, reasoN: ${result.message}`);
                         
                     const errorPtr = this.validateAllocString(result.message);
 
-                    dynCall('vi', errorCallback, [errorPtr]);
-
-                    _free(errorPtr);
+                    this.sendSonarDataToUnity('vi', errorCallback, [errorPtr]);
 
                     return;
                 }
 
-                console.log(`[Unigram Ads] Ad unit successfully removed, status: ${result.status}`);
+                console.log(`[Unigram Ads] Ad unit successfully `+
+                    `removed, status: ${result.status}`);
 
                 dynCall('v', successCallback);
             });

@@ -1,4 +1,7 @@
 const adsGramBridge = {
+
+    // Class definition
+
     $adsGram: {
         AdsGramController: null,
 
@@ -19,8 +22,6 @@ const adsGramBridge = {
 
             if (typeof allocate === 'undefined')
             {
-                console.log(`[Unigram Ads] Detected Unity version 2023+`);
-
                 const length = lengthBytesUTF8(data) + 1;
 
                 ptr = _malloc(length);
@@ -31,6 +32,32 @@ const adsGramBridge = {
             }
 
             return allocate(intArrayFromString(data), 'i8', ALLOC_NORMAL);
+        },
+
+        sendGramDataToUnity: function(callId, callback, dataPtr)
+        {
+            if (typeof wasmTable !== 'undefined')
+            {
+                wasmTable.get(callback).apply(null, dataPtr);
+
+                return;
+            }
+
+            if (typeof dynCall !== 'undefined')
+            {
+                dynCall(callId, callback, dataPtr);
+            }
+            else
+            {
+                return;
+            }
+
+            if (callId === 'v')
+            {
+                return;
+            }
+
+            _free(dataPtr);
         },
 
         isAvailableAdsGram: function()
@@ -44,14 +71,14 @@ const adsGramBridge = {
             {
                 console.warn('[Unigram Ads] Failed to initialize AdsGram bridge');
 
-                dynCall('vi', callback, [0]);
+                this.sendGramDataToUnity('vi', callback, [0]);
 
                 return;
             }
 
             console.log('[Unigram Ads] AdsGram bridge initialized');
 
-            dynCall('vi', callback, [1]);
+            this.sendGramDataToUnity('vi', callback, [1]);
         },
 
         initAdUnit: function(adUnit, isTestMode)
@@ -83,9 +110,7 @@ const adsGramBridge = {
             {
                 const reasonPtr = this.parseAllocString("SDK_NOT_INITIALIZED");
 
-                dynCall('vi', errorCallback, [reasonPtr]);
-
-                _free(reasonPtr);
+                this.sendGramDataToUnity('vi', errorCallback, [reasonPtr]);
 
                 return;
             }
@@ -105,7 +130,7 @@ const adsGramBridge = {
 
                     this.massiveUnSubscribeFromNativeEvents();
 
-                    dynCall('v', successCallback);
+                    this.sendGramDataToUnity('v', successCallback);
 
                     return;
                 }
@@ -114,9 +139,7 @@ const adsGramBridge = {
 
                 this.massiveUnSubscribeFromNativeEvents();
 
-                dynCall('vi', errorCallback, [errorPtr]);
-
-                _free(errorPtr);
+                this.sendGramDataToUnity('vi', errorCallback, [errorPtr]);
             })
             .catch((error) =>
             {
@@ -128,9 +151,7 @@ const adsGramBridge = {
                 console.error(`[Unigram Ads] Failed to show native ad, reason: ${error}`);
                 console.error(`[Unigram Ads] Show error reason: ${JSON.stringify(error, null, 4)}`);
 
-                dynCall('vi', errorCallback, [reasonPtr]);
-
-                _free(reasonPtr);
+                this.sendGramDataToUnity('vi', errorCallback, [reasonPtr]);
             });
         },
 
@@ -197,7 +218,8 @@ const adsGramBridge = {
                 EventId: adEventId
             });
 
-            console.log(`[Unigram Ads] Dispatched native AdsGram event '${payloadEvent}' to listener`);
+            console.log(`[Unigram Ads] Dispatched native AdsGram `+
+                `event '${payloadEvent}' to listener`);
 
             SendMessage("NativeAdEventListener", "ReceiveEvent", payloadEvent);
         }
